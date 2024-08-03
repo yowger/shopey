@@ -12,7 +12,7 @@ import LoginForm from "@/components/forms/auth/login"
 
 export default function page() {
     return (
-        <Card className="">
+        <Card className="w-full md:w-2/3 lg:w-1/2">
             <CardHeader>
                 <CardTitle>Log in to your account</CardTitle>
                 <CardDescription>

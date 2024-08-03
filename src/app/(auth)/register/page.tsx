@@ -12,7 +12,7 @@ import RegisterForm from "@/components/forms/auth/register"
 
 export default function page() {
     return (
-        <Card className="">
+        <Card className="w-full md:w-2/3 lg:w-1/2">
             <CardHeader>
                 <CardTitle>Create an account</CardTitle>
                 <CardDescription>
