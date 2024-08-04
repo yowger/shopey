@@ -2,6 +2,9 @@
 
 import { signIn } from "next-auth/react"
 import { FaGithub } from "react-icons/fa"
+import { CiCircleAlert } from "react-icons/ci"
+import { useAction } from "next-safe-action/hooks"
+import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -20,13 +23,50 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 
+import { register } from "@/server/actions/auth/register"
+
+import { REGISTER_ERROR, type RegisterError } from "@/server/actions/auth/types"
+
 export default function RegisterForm() {
+    const [error, setError] = useState("")
+
     const form = useForm<z.infer<typeof RegisterSchema>>({
         resolver: zodResolver(RegisterSchema),
     })
+    const { setError: setFormError, setFocus } = form
+
+    const { execute, isExecuting } = useAction(register, {
+        onError: (data) => {
+            console.log("🚀 ~ RegisterForm ~ data:", data)
+            setError("Something unexpected happened. Please try again later.")
+        },
+        onSuccess: (args) => {
+            const { data } = args
+
+            if (data?.code) {
+                switch (data.code as RegisterError) {
+                    case REGISTER_ERROR.USER_EXISTS:
+                        setFocus("email")
+                        setFormError("email", {
+                            type: "manual",
+                            message: "Email already in use.",
+                        })
+                        setError(
+                            "Something unexpected happened. Please try again later."
+                        )
+
+                        break
+                    default:
+                        setError(
+                            "Something unexpected happened. Please try again later."
+                        )
+                }
+            }
+        },
+    })
 
     const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
-        console.log("🚀 ~ onSubmit ~ values:", values)
+        execute(values)
     }
 
     return (
@@ -91,7 +131,16 @@ export default function RegisterForm() {
                     />
                 </div>
 
-                <Button className="w-full mt-6 mb-2">Sign up</Button>
+                {error && (
+                    <div className="bg-destructive/25 flex text-xs font-medium items-center mt-2 gap-2 text-secondary-foreground p-3 rounded-md">
+                        <CiCircleAlert className="size-5" />
+                        <p>{error}</p>
+                    </div>
+                )}
+
+                <Button disabled={isExecuting} className="w-full mt-6 mb-2">
+                    Sign up
+                </Button>
 
                 <p className="line-text text-center mt-4 mb-6">
                     or continue with

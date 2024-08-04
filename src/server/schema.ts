@@ -4,19 +4,25 @@ import {
     text,
     primaryKey,
     integer,
-    serial,
+    pgEnum,
 } from "drizzle-orm/pg-core"
+import { createId } from "@paralleldrive/cuid2"
 
 import type { AdapterAccount } from "next-auth/adapters"
 
+export const RoleEnum = pgEnum("roles", ["user", "admin"])
+
 export const users = pgTable("user", {
     id: text("id")
+        .notNull()
         .primaryKey()
-        .$defaultFn(() => crypto.randomUUID()),
+        .$defaultFn(() => createId()),
     name: text("name"),
     email: text("email").unique(),
+    password: text("password"),
     emailVerified: timestamp("emailVerified", { mode: "date" }),
     image: text("image"),
+    role: RoleEnum("roles").default("user"),
 })
 
 export const accounts = pgTable(

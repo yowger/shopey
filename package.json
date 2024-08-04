@@ -14,9 +14,11 @@
         "@auth/drizzle-adapter": "^0.9.0",
         "@hookform/resolvers": "^3.9.0",
         "@neondatabase/serverless": "^0.9.4",
+        "@paralleldrive/cuid2": "^2.2.2",
         "@radix-ui/react-label": "^2.1.0",
         "@radix-ui/react-slot": "^1.1.0",
         "@t3-oss/env-core": "^0.11.0",
+        "bcrypt": "^5.1.1",
         "class-variance-authority": "^0.7.0",
         "clsx": "^2.1.1",
         "dotenv": "^16.4.5",
@@ -25,6 +27,7 @@
         "lucide-react": "^0.417.0",
         "next": "14.2.5",
         "next-auth": "^5.0.0-beta.16",
+        "next-safe-action": "^7.4.3",
         "pg": "^8.12.0",
         "postgres": "^3.4.4",
         "react": "^18.3.1",
@@ -36,6 +39,7 @@
         "zod": "^3.23.8"
     },
     "devDependencies": {
+        "@types/bcrypt": "^5.0.2",
         "@types/node": "^20.14.13",
         "@types/react": "^18.3.3",
         "@types/react-dom": "^18.3.0",
