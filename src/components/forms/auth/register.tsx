@@ -51,9 +51,6 @@ export default function RegisterForm() {
                             type: "manual",
                             message: "Email already in use.",
                         })
-                        setError(
-                            "Something unexpected happened. Please try again later."
-                        )
 
                         break
                     default:
