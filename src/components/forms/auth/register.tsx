@@ -139,7 +139,7 @@ export default function RegisterForm() {
                     Sign up
                 </Button>
 
-                <p className="line-text text-center mt-4 mb-6">
+                <p className="line-text text-center mt-4 mb-6 text-sm">
                     or continue with
                 </p>
 

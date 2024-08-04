@@ -48,3 +48,22 @@ export const accounts = pgTable(
         }),
     })
 )
+
+export const otp = pgTable(
+    "otp",
+    {
+        id: text("id")
+            .notNull()
+            .$defaultFn(() => createId()),
+        userId: text("userId")
+            .notNull()
+            .references(() => users.id, { onDelete: "cascade" }),
+        code: text("token").notNull(),
+        expires: timestamp("expires", { mode: "date" }).notNull(),
+    },
+    (otp) => ({
+        compoundKey: primaryKey({
+            columns: [otp.id, otp.code, otp.userId],
+        }),
+    })
+)
