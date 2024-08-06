@@ -9,7 +9,14 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 
+import { register } from "@/server/actions/auth/register"
+
 import { RegisterSchema } from "@/schemas/auth/register"
+
+import { HttpStatusCodes } from "@/errors/http"
+import { isBaseError } from "@/errors/utils/isBaseError"
+
+import { GENERIC_ERROR_MESSAGE } from "@/constants/messages/errors"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -23,10 +30,6 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 
-import { register } from "@/server/actions/auth/register"
-
-import { REGISTER_ERROR, type RegisterError } from "@/server/actions/auth/types"
-
 export default function RegisterForm() {
     const [error, setError] = useState("")
 
@@ -36,30 +39,35 @@ export default function RegisterForm() {
     const { setError: setFormError, setFocus } = form
 
     const { execute, isExecuting } = useAction(register, {
-        onError: (data) => {
-            console.log("🚀 ~ RegisterForm ~ data:", data)
-            setError("Something unexpected happened. Please try again later.")
-        },
-        onSuccess: (args) => {
-            const { data } = args
+        onError: (args) => {
+            const { error } = args
+            const { serverError } = error
 
-            if (data?.code) {
-                switch (data.code as RegisterError) {
-                    case REGISTER_ERROR.USER_EXISTS:
+            if (typeof serverError === "string") {
+                setError(serverError)
+
+                return
+            }
+
+            if (isBaseError(serverError)) {
+                switch (serverError.httpStatusCode) {
+                    case HttpStatusCodes.CONFLICT:
                         setFocus("email")
                         setFormError("email", {
                             type: "manual",
                             message: "Email already in use.",
                         })
-
                         break
                     default:
-                        setError(
-                            "Something unexpected happened. Please try again later."
-                        )
+                        setError(GENERIC_ERROR_MESSAGE)
                 }
+
+                return
             }
+
+            setError(GENERIC_ERROR_MESSAGE)
         },
+        onSuccess: (args) => {},
     })
 
     const onSubmit = (values: z.infer<typeof RegisterSchema>) => {

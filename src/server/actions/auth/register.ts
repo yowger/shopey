@@ -2,7 +2,6 @@
 
 import bcrpyt from "bcrypt"
 import { eq } from "drizzle-orm"
-import { flattenValidationErrors } from "next-safe-action"
 
 import { db } from "@/server/db"
 
@@ -11,16 +10,13 @@ import { actionClient } from "@/lib/safeAction"
 import { RegisterSchema } from "@/schemas/auth/register"
 import { otp, users } from "@/server/schema"
 
-import { REGISTER_ERROR } from "./types"
 import { generateOtp } from "@/utils/generateOtp"
-import { sendOtpEmail } from "./email"
+import { sendOtpEmail } from "@/server/actions/auth/email"
+import { ConflictError } from "@/errors/http"
 
 // TODO: refactor to smaller functions
 export const register = actionClient
-    .schema(RegisterSchema, {
-        handleValidationErrorsShape: (validationErrors) =>
-            flattenValidationErrors(validationErrors).fieldErrors,
-    })
+    .schema(RegisterSchema)
     .action(async ({ parsedInput }) => {
         const { name, email, password } = parsedInput
 
@@ -32,10 +28,7 @@ export const register = actionClient
         })
 
         if (existingUser) {
-            return {
-                failure: "Email already in use.",
-                code: REGISTER_ERROR.USER_EXISTS,
-            }
+            throw new ConflictError("Email already in use.")
         }
 
         try {
@@ -65,7 +58,7 @@ export const register = actionClient
 
             return {
                 failure: "An error occurred during registration.",
-                code: REGISTER_ERROR.REGISTRATION_ERROR,
+                // code: REGISTER_ERROR.REGISTRATION_ERROR,
             }
         }
 

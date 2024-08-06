@@ -14,7 +14,7 @@ interface sendOtpEmailProps {
     code: string
 }
 
-export const sendOtpEmail = async (props: sendOtpEmailProps) => {
+export async function sendOtpEmail(props: sendOtpEmailProps) {
     const { userId, email, code } = props
 
     const verifyLink = `${domain}/verify?code=${code}`

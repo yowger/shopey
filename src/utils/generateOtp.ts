@@ -1,6 +1,6 @@
 import { randomInt } from "crypto"
 
-export const generateOtp = (length: number = 6): string => {
+export function generateOtp(length: number = 6): string {
     let otp = ""
 
     for (let i = 0; i < length; i++) {
