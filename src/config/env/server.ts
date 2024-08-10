@@ -3,6 +3,7 @@ import { z } from "zod"
 
 const env = createEnv({
     server: {
+        NODE_ENV: z.enum(["development", "test", "production"]),
         AUTH_DRIZZLE_URL: z.string().url(),
         AUTH_SECRET: z.string().min(1),
         GITHUB_CLIENT_ID: z.string().min(1),
@@ -12,6 +13,7 @@ const env = createEnv({
         // GOOGLE_CLIENT_SECRET: z.string().min(1),
     },
     runtimeEnv: {
+        NODE_ENV: process.env.NODE_ENV,
         AUTH_DRIZZLE_URL: process.env.AUTH_DRIZZLE_URL,
         AUTH_SECRET: process.env.AUTH_SECRET,
         GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,

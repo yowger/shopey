@@ -12,7 +12,7 @@ import { otp, users } from "@/server/schema"
 
 import { generateOtp } from "@/utils/generateOtp"
 import { sendOtpEmail } from "@/server/actions/auth/email"
-import { ConflictError } from "@/errors/http"
+import { BadRequestError, ConflictError } from "@/errors/http"
 
 // TODO: refactor to smaller functions
 export const register = actionClient
@@ -36,7 +36,6 @@ export const register = actionClient
                 .insert(users)
                 .values({ name, email, password: hashedPassword })
                 .returning({ id: users.id })
-            console.log("🚀 ~ .action ~ createdUser:", createdUser[0].id)
 
             const otpCode = generateOtp()
             const expirationTime = new Date()
@@ -54,12 +53,7 @@ export const register = actionClient
                 code: otpCode,
             })
         } catch (error) {
-            console.error("error user registration:", error)
-
-            return {
-                failure: "An error occurred during registration.",
-                // code: REGISTER_ERROR.REGISTRATION_ERROR,
-            }
+            throw new BadRequestError("An error occurred during registration.")
         }
 
         return {

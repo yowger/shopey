@@ -43,12 +43,6 @@ export default function RegisterForm() {
             const { error } = args
             const { serverError } = error
 
-            if (typeof serverError === "string") {
-                setError(serverError)
-
-                return
-            }
-
             if (isBaseError(serverError)) {
                 switch (serverError.httpStatusCode) {
                     case HttpStatusCodes.CONFLICT:
@@ -57,12 +51,13 @@ export default function RegisterForm() {
                             type: "manual",
                             message: "Email already in use.",
                         })
-                        break
-                    default:
-                        setError(GENERIC_ERROR_MESSAGE)
-                }
 
-                return
+                        return
+                    case HttpStatusCodes.BAD_REQUEST:
+                        setError(serverError.description)
+
+                        return
+                }
             }
 
             setError(GENERIC_ERROR_MESSAGE)
