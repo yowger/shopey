@@ -7,7 +7,6 @@ jiti("./src/config/env/server")
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     experimental: {
-        instrumentationHook: true,
         serverComponentsExternalPackages: ["pino", "pino-pretty"],
     },
 }

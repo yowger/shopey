@@ -29,7 +29,6 @@
         "lucide-react": "^0.417.0",
         "next": "14.2.5",
         "next-auth": "^5.0.0-beta.16",
-        "next-logger": "^5.0.0",
         "next-safe-action": "^7.4.3",
         "pg": "^8.12.0",
         "pino": "^9.3.2",

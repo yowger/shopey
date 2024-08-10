@@ -4,10 +4,21 @@ import env from "@/config/env/server"
 
 import type { Logger } from "pino"
 
+const redactPaths: string[] = [
+    "*.name",
+    "*.email",
+    "*.password",
+    "*.confirmPassword",
+    "result.parsedInput.name",
+    "result.parsedInput.email",
+    "result.parsedInput.password",
+    "result.parsedInput.confirmPassword",
+]
+
 const productionLoggerOptions: pino.LoggerOptions = {
     level: "warn",
     redact: {
-        paths: ["*.name", "*.email", "*.password", "*.confirmPassword"],
+        paths: redactPaths,
         censor: "[REDACTED]",
     },
     timestamp: pino.stdTimeFunctions.isoTime,
@@ -28,7 +39,7 @@ const developmentLoggerOptions: pino.LoggerOptions = {
     },
     level: "debug",
     redact: {
-        paths: ["*.name", "*.email", "*.password", "*.confirmPassword"],
+        paths: redactPaths,
         censor: "[REDACTED]",
     },
     timestamp: pino.stdTimeFunctions.isoTime,
