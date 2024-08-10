@@ -1,6 +1,6 @@
 import { createSafeActionClient } from "next-safe-action"
 
-import { BaseError, HttpStatusCodes } from "@/errors/http"
+import { BaseError } from "@/errors/http"
 
 import { GENERIC_ERROR_MESSAGE } from "@/constants/messages/errors"
 

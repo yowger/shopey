@@ -11,7 +11,7 @@ import { RegisterSchema } from "@/schemas/auth/register"
 import { otp, users } from "@/server/schema"
 
 import { generateOtp } from "@/utils/generateOtp"
-import { sendOtpEmail } from "@/server/actions/auth/email"
+import { sendOtpEmail } from "@/server/actions/auth/email/sendOtp"
 import { BadRequestError, ConflictError } from "@/errors/http"
 
 // TODO: refactor to smaller functions
@@ -47,16 +47,23 @@ export const register = actionClient
                 expires: expirationTime,
             })
 
-            await sendOtpEmail({
-                userId: createdUser[0].id,
+            const { error } = await sendOtpEmail({
+                username: name,
                 email,
                 code: otpCode,
             })
+
+            if (error) {
+                return {
+                    success:
+                        "Account created, but failed to send OTP email. Please try again later.",
+                }
+            }
+
+            return {
+                success: "OTP code has been sent to your email",
+            }
         } catch (error) {
             throw new BadRequestError("An error occurred during registration.")
-        }
-
-        return {
-            success: "OTP code has been sent to your email",
         }
     })
