@@ -8,7 +8,16 @@ import logger from "@/utils/logger"
 
 import type { ErrorDetails } from "@/errors/http"
 
-const log = logger.child({ module: "error" })
+const errorLogger = logger.child({ module: "error" })
+const actionLogger = logger.child({ module: "action" })
+
+interface ActionLog {
+    durationInMs: number
+    clientInput: any
+    bindArgsClientInputs: any
+    metadata: any
+    result: any
+}
 
 export const actionClient = createSafeActionClient({
     defaultValidationErrorsShape: "flattened",
@@ -18,7 +27,7 @@ export const actionClient = createSafeActionClient({
                 ? "OPERATIONAL ERROR"
                 : "NON-OPERATIONAL ERROR"
 
-            log.error({
+            errorLogger.error({
                 type: errorType,
                 httpStatusCode: error.httpStatusCode,
                 message: error.message,
@@ -28,7 +37,7 @@ export const actionClient = createSafeActionClient({
             return
         }
 
-        log.fatal({
+        errorLogger.fatal({
             type: "SERVER ERROR",
             message: error.message,
             stack: error.stack,
@@ -48,4 +57,26 @@ export const actionClient = createSafeActionClient({
 
         return GENERIC_ERROR_MESSAGE
     },
+}).use(async (args) => {
+    const { next, metadata, clientInput, bindArgsClientInputs, ctx } = args
+
+    const start = Date.now()
+
+    const result = await next({ ctx })
+
+    const end = Date.now()
+
+    const durationInMs = end - start
+
+    const logObject: ActionLog = {
+        durationInMs,
+        clientInput,
+        bindArgsClientInputs,
+        metadata,
+        result,
+    }
+
+    actionLogger.info(logObject)
+
+    return result
 })
