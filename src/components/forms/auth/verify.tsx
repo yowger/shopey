@@ -19,6 +19,7 @@ import {
     InputOTPGroup,
     InputOTPSlot,
 } from "@/components/ui/input-otp"
+import { partialCensorEmail } from "@/utils/email"
 // import { toast } from "@/components/ui/use-toast"
 
 const FormSchema = z.object({
@@ -28,7 +29,8 @@ const FormSchema = z.object({
 })
 
 export default function VerifyUserForm() {
-    const email = "rogerpantilyow@gmail.com"
+    const email = "johnDoe@gmail.com"
+    const partialCensoredEmail = partialCensorEmail(email)
 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
@@ -53,8 +55,8 @@ export default function VerifyUserForm() {
     return (
         <>
             <p className="text-center text-sm">
-                We have sent a OTP code to {email}. Enter the OTP code below to
-                verify your account.
+                We have sent a OTP code to {partialCensoredEmail}. Enter the OTP
+                code below to verify your account.
             </p>
 
             <Form {...form}>
