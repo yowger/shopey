@@ -1,9 +1,8 @@
 import { createSafeActionClient } from "next-safe-action"
 
-import { BaseError } from "@/errors/http"
-
 import { GENERIC_ERROR_MESSAGE } from "@/constants/messages/errors"
 
+import { isBaseError } from "@/errors/utils/isBaseError"
 import { logError } from "@/utils/logger/sub/error"
 import { logAction } from "@/utils/logger/sub/action"
 
@@ -12,7 +11,7 @@ import type { ErrorDetails } from "@/errors/http"
 export const actionClient = createSafeActionClient({
     defaultValidationErrorsShape: "flattened",
     handleServerErrorLog: (error) => {
-        if (error instanceof BaseError) {
+        if (isBaseError(error)) {
             logError(error, error.isOperational, {
                 httpStatusCode: error.httpStatusCode,
             })
@@ -23,7 +22,7 @@ export const actionClient = createSafeActionClient({
         logError(error, false)
     },
     handleReturnedServerError(error) {
-        if (error instanceof BaseError) {
+        if (isBaseError(error)) {
             const { name, message, httpStatusCode, isOperational } = error
 
             return {
