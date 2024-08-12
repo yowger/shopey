@@ -32,45 +32,43 @@ export default function LoginForm() {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
-                <div className="space-y-2.5">
-                    <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Email</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        {...field}
-                                        type="email"
-                                        autoComplete="email"
-                                    />
-                                </FormControl>
-                                <FormDescription />
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="password"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Password</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        {...field}
-                                        type="password"
-                                        autoComplete="current-password"
-                                    />
-                                </FormControl>
-                                <FormDescription />
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                </div>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Email</FormLabel>
+                            <FormControl>
+                                <Input
+                                    {...field}
+                                    type="email"
+                                    autoComplete="email"
+                                />
+                            </FormControl>
+                            <FormDescription />
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Password</FormLabel>
+                            <FormControl>
+                                <Input
+                                    {...field}
+                                    type="password"
+                                    autoComplete="current-password"
+                                />
+                            </FormControl>
+                            <FormDescription />
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
 
                 <Link
                     className="text-sm font-bold text-blue-600 inline-block"
@@ -79,14 +77,16 @@ export default function LoginForm() {
                     Forgot your password
                 </Link>
 
-                <Button type="submit" className="w-full mt-6 mb-2">
+                <Button type="submit" className="w-full">
                     Sign in
                 </Button>
 
-                <p className="line-text text-center mt-4">or continue with</p>
+                <p className="line-text text-center text-sm">
+                    or continue with
+                </p>
 
                 <Button
-                    className="flex gap-4 w-full mt-6"
+                    className="flex gap-4 w-full"
                     variant={"outline"}
                     onClick={() =>
                         signIn("github", {
