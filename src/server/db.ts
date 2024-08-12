@@ -7,4 +7,4 @@ import env from "@/config/env/server"
 
 const sql = neon(env.AUTH_DRIZZLE_URL)
 
-export const db = drizzle(sql, { schema, logger: true })
+export const db = drizzle(sql, { schema })

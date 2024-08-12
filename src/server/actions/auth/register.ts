@@ -1,22 +1,20 @@
 "use server"
 
 import bcrpyt from "bcrypt"
-import { eq } from "drizzle-orm"
-
-import { db } from "@/server/db"
 
 import { actionClient } from "@/lib/safeAction"
 
-import { sendOtpEmail } from "@/server/actions/auth/email/sendOtp"
+import { createUser, findUserByEmail } from "@/server/service/user"
+import { sendOtpEmail } from "@/server/actions/email/sendOtp"
+import { createOtp } from "@/server/service/auth"
 
 import { RegisterSchema } from "@/schemas/auth/register"
-import { otp, users } from "@/server/schema"
 
 import { BadRequestError, ConflictError } from "@/errors/http"
 
+import { calculateExpirationTimeInMin } from "@/utils/time"
 import { generateOtp } from "@/utils/generateOtp"
 
-// TODO: refactor to smaller functions
 export const register = actionClient
     .schema(RegisterSchema)
     .action(async ({ parsedInput }) => {
@@ -25,26 +23,24 @@ export const register = actionClient
         const saltRounds = 10
         const hashedPassword = await bcrpyt.hash(password, saltRounds)
 
-        const existingUser = await db.query.users.findFirst({
-            where: eq(users.email, email),
-        })
+        const existingUser = await findUserByEmail(email)
 
         if (existingUser) {
             throw new ConflictError("Email already in use.")
         }
 
         try {
-            const createdUser = await db
-                .insert(users)
-                .values({ name, email, password: hashedPassword })
-                .returning({ id: users.id })
+            const userId = await createUser({
+                name,
+                email,
+                password: hashedPassword,
+            })
 
             const otpCode = generateOtp()
-            const expirationTime = new Date()
-            expirationTime.setMinutes(expirationTime.getMinutes() + 15)
+            const expirationTime = calculateExpirationTimeInMin(15)
 
-            await db.insert(otp).values({
-                userId: createdUser[0].id,
+            await createOtp({
+                userId,
                 code: otpCode,
                 expires: expirationTime,
             })
@@ -57,13 +53,17 @@ export const register = actionClient
 
             if (error) {
                 return {
-                    success:
-                        "Account created, but failed to send OTP email. Please try again later.",
+                    success: {
+                        message:
+                            "Account created, but failed to send OTP email. Please try again later.",
+                    },
                 }
             }
 
             return {
-                success: "OTP code has been sent to your email",
+                success: {
+                    message: "OTP code has been sent to your email",
+                },
             }
         } catch (error) {
             throw new BadRequestError("An error occurred during registration.")

@@ -2,7 +2,6 @@
 
 import { signIn } from "next-auth/react"
 import { FaGithub } from "react-icons/fa"
-import { CiCircleAlert } from "react-icons/ci"
 import { useAction } from "next-safe-action/hooks"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
@@ -29,9 +28,12 @@ import {
     FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import ErrorMessage from "@/components/alert/errorMessage"
+import SuccessMessage from "@/components/alert/successMessage"
 
 export default function RegisterForm() {
-    const [error, setError] = useState("")
+    const [errorMessage, setErrorMessage] = useState("")
+    const [successMessage, setSuccessMessage] = useState("")
 
     const form = useForm<z.infer<typeof RegisterSchema>>({
         resolver: zodResolver(RegisterSchema),
@@ -42,6 +44,9 @@ export default function RegisterForm() {
         onError: (args) => {
             const { error } = args
             const { serverError } = error
+
+            setErrorMessage("")
+            setSuccessMessage("")
 
             if (isBaseError(serverError)) {
                 switch (serverError.httpStatusCode) {
@@ -54,15 +59,26 @@ export default function RegisterForm() {
 
                         return
                     case HttpStatusCodes.BAD_REQUEST:
-                        setError(serverError.description)
+                        setErrorMessage(serverError.description)
 
                         return
                 }
             }
 
-            setError(GENERIC_ERROR_MESSAGE)
+            setErrorMessage(GENERIC_ERROR_MESSAGE)
         },
-        onSuccess: (args) => {},
+        onSuccess: (args) => {
+            const { data } = args
+
+            setErrorMessage("")
+            setSuccessMessage("")
+
+            if (data?.success.message) {
+                setSuccessMessage(data.success.message)
+
+                return
+            }
+        },
     })
 
     const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
@@ -131,12 +147,8 @@ export default function RegisterForm() {
                     />
                 </div>
 
-                {error && (
-                    <div className="bg-destructive/25 flex text-xs font-medium items-center mt-2 gap-2 text-secondary-foreground p-3 rounded-md">
-                        <CiCircleAlert className="size-5" />
-                        <p>{error}</p>
-                    </div>
-                )}
+                <ErrorMessage message={errorMessage} className="mt-2" />
+                <SuccessMessage message={successMessage} className="mt-2" />
 
                 <Button disabled={isExecuting} className="w-full mt-6 mb-2">
                     Sign up
