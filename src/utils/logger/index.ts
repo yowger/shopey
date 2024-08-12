@@ -28,14 +28,10 @@ const developmentLoggerOptions: pino.LoggerOptions = {
     transport: {
         target: "pino-pretty",
         options: {
+            translateTime: "SYS:mm-dd-yyyy hh:mm:ss TT",
             colorize: true,
+            ignore: "pid, hostname",
         },
-    },
-    formatters: {
-        bindings: (bindings) => ({
-            pid: bindings.pid,
-            host: bindings.hostname,
-        }),
     },
     level: "debug",
     redact: {
@@ -45,10 +41,11 @@ const developmentLoggerOptions: pino.LoggerOptions = {
     timestamp: pino.stdTimeFunctions.isoTime,
 }
 
-const logger: Logger = pino(
+const option =
     env.NODE_ENV === "production"
         ? productionLoggerOptions
         : developmentLoggerOptions
-)
+
+const logger: Logger = pino(option)
 
 export default logger

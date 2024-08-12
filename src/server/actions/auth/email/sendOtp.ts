@@ -3,9 +3,9 @@ import { Resend } from "resend"
 
 import env from "@/config/env/server"
 
-import VerifyEmailTemplate from "@/components/email/verify"
+import { logError } from "@/utils/logger/sub/error"
 
-const resend = new Resend(env.RESEND_API_KEY)
+import VerifyEmailTemplate from "@/components/email/verify"
 
 interface sendOtpEmailProps {
     username: string
@@ -13,24 +13,37 @@ interface sendOtpEmailProps {
     code: string
 }
 
+const resend = new Resend(env.RESEND_API_KEY)
+
 export async function sendOtpEmail(props: sendOtpEmailProps) {
     const { username, email, code } = props
 
     try {
-        await resend.emails.send({
+        const { error } = await resend.emails.send({
             from: "Acme <onboarding@resend.dev>",
             to: email,
             subject: "Verify email",
             html: render(VerifyEmailTemplate({ username, otpCode: code })),
         })
 
+        if (error) {
+            logError(error, true)
+
+            return {
+                error: error.message,
+                success: false,
+            }
+        }
+
         return {
             error: null,
             success: true,
         }
     } catch (error) {
+        logError(error as Error, false)
+
         return {
-            error: (error as Error).message,
+            error: "An unexpected error occurred.",
             success: false,
         }
     }

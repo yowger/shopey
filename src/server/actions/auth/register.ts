@@ -7,12 +7,14 @@ import { db } from "@/server/db"
 
 import { actionClient } from "@/lib/safeAction"
 
+import { sendOtpEmail } from "@/server/actions/auth/email/sendOtp"
+
 import { RegisterSchema } from "@/schemas/auth/register"
 import { otp, users } from "@/server/schema"
 
-import { generateOtp } from "@/utils/generateOtp"
-import { sendOtpEmail } from "@/server/actions/auth/email/sendOtp"
 import { BadRequestError, ConflictError } from "@/errors/http"
+
+import { generateOtp } from "@/utils/generateOtp"
 
 // TODO: refactor to smaller functions
 export const register = actionClient

@@ -4,44 +4,23 @@ import { BaseError } from "@/errors/http"
 
 import { GENERIC_ERROR_MESSAGE } from "@/constants/messages/errors"
 
-import logger from "@/utils/logger"
+import { logError } from "@/utils/logger/sub/error"
+import { logAction } from "@/utils/logger/sub/action"
 
 import type { ErrorDetails } from "@/errors/http"
-
-const errorLogger = logger.child({ module: "error" })
-const actionLogger = logger.child({ module: "action" })
-
-interface ActionLog {
-    durationInMs: number
-    clientInput: any
-    bindArgsClientInputs: any
-    metadata: any
-    result: any
-}
 
 export const actionClient = createSafeActionClient({
     defaultValidationErrorsShape: "flattened",
     handleServerErrorLog: (error) => {
         if (error instanceof BaseError) {
-            const errorType = error.isOperational
-                ? "OPERATIONAL ERROR"
-                : "NON-OPERATIONAL ERROR"
-
-            errorLogger.error({
-                type: errorType,
+            logError(error, error.isOperational, {
                 httpStatusCode: error.httpStatusCode,
-                message: error.message,
-                stack: error.stack,
             })
 
             return
         }
 
-        errorLogger.fatal({
-            type: "SERVER ERROR",
-            message: error.message,
-            stack: error.stack,
-        })
+        logError(error, false)
     },
     handleReturnedServerError(error) {
         if (error instanceof BaseError) {
@@ -68,15 +47,13 @@ export const actionClient = createSafeActionClient({
 
     const durationInMs = end - start
 
-    const logObject: ActionLog = {
+    logAction({
         durationInMs,
         clientInput,
         bindArgsClientInputs,
         metadata,
         result,
-    }
-
-    actionLogger.info(logObject)
+    })
 
     return result
 })
