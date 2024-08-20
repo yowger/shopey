@@ -16,6 +16,7 @@ export const actionClient = createSafeActionClient({
             logError(error, error.isOperational, {
                 httpStatusCode: error.httpStatusCode,
             })
+
             return
         }
 

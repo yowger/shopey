@@ -23,7 +23,9 @@ export async function createUser(userData: CreateUserData): Promise<string> {
     return createdUser[0].id
 }
 
-export async function findUserByEmail(email: string) {
+export async function findUserByEmail(
+    email: string
+): Promise<InsertUser | undefined> {
     return await db.query.users.findFirst({
         where: eq(users.email, email),
     })

@@ -1,13 +1,17 @@
 "use client"
 
-import Link from "next/link"
+// import Link from "next/link"
 import { signIn } from "next-auth/react"
 import { FaGithub } from "react-icons/fa"
+import { useAction } from "next-safe-action/hooks"
+import { useState } from "react"
 import { useForm } from "react-hook-form"
-import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 
 import { LoginSchema } from "@/schemas/auth/login"
+
+import { HttpStatusCodes } from "@/errors/http"
+import { isBaseError } from "@/errors/utils/isBaseError"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -19,15 +23,65 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form"
+import ErrorMessage from "@/components/alert/errorMessage"
+import SuccessMessage from "@/components/alert/successMessage"
+
+import { login } from "@/server/actions/auth/login"
+
+import { GENERIC_ERROR_MESSAGE } from "@/constants/messages/errors"
+
 import { Input } from "@/components/ui/input"
 
+import type { LoginInput } from "@/schemas/auth/login"
+
 export default function LoginForm() {
-    const form = useForm<z.infer<typeof LoginSchema>>({
+    const [errorMessage, setErrorMessage] = useState("")
+    const [successMessage, setSuccessMessage] = useState("")
+
+    const form = useForm<LoginInput>({
         resolver: zodResolver(LoginSchema),
     })
+    const { setError: setFormError, setFocus } = form
 
-    const onSubmit = (values: z.infer<typeof LoginSchema>) => {
-        console.log("🚀 ~ onSubmit ~ values:", values)
+    const { execute, isExecuting } = useAction(login, {
+        onError: (args) => {
+            const { error } = args
+            const { serverError } = error
+
+            setSuccessMessage("")
+
+            if (isBaseError(serverError)) {
+                switch (serverError.httpStatusCode) {
+                    case HttpStatusCodes.NOT_FOUND:
+                        setFocus("email")
+                        setFormError("email", {
+                            type: "manual",
+                            message: serverError.description,
+                        })
+
+                        return
+                    case HttpStatusCodes.BAD_REQUEST:
+                        setErrorMessage(serverError.description)
+
+                        return
+                    default:
+                        setErrorMessage(serverError.description)
+
+                        return
+                }
+            }
+
+            setErrorMessage(GENERIC_ERROR_MESSAGE)
+        },
+        onSuccess: (args) => {
+            setErrorMessage("")
+
+            setSuccessMessage("sign in successfully")
+        },
+    })
+
+    const onSubmit = (values: LoginInput) => {
+        execute(values)
     }
 
     return (
@@ -70,14 +124,17 @@ export default function LoginForm() {
                     )}
                 />
 
-                <Link
+                <ErrorMessage message={errorMessage} />
+                <SuccessMessage message={successMessage} />
+
+                {/* <Link
                     className="text-sm font-bold text-blue-600 inline-block"
                     href="/auth/reset"
                 >
                     Forgot your password
-                </Link>
+                </Link> */}
 
-                <Button type="submit" className="w-full">
+                <Button type="submit" className="w-full" disabled={isExecuting}>
                     Sign in
                 </Button>
 

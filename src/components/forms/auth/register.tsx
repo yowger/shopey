@@ -5,12 +5,11 @@ import { FaGithub } from "react-icons/fa"
 import { useAction } from "next-safe-action/hooks"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
-import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 
 import { register } from "@/server/actions/auth/register"
 
-import { RegisterSchema } from "@/schemas/auth/register"
+import { RegisterInput, RegisterSchema } from "@/schemas/auth/register"
 
 import { HttpStatusCodes } from "@/errors/http"
 import { isBaseError } from "@/errors/utils/isBaseError"
@@ -35,7 +34,7 @@ export default function RegisterForm() {
     const [errorMessage, setErrorMessage] = useState("")
     const [successMessage, setSuccessMessage] = useState("")
 
-    const form = useForm<z.infer<typeof RegisterSchema>>({
+    const form = useForm<RegisterInput>({
         resolver: zodResolver(RegisterSchema),
     })
     const { setError: setFormError, setFocus } = form
@@ -45,7 +44,6 @@ export default function RegisterForm() {
             const { error } = args
             const { serverError } = error
 
-            setErrorMessage("")
             setSuccessMessage("")
 
             if (isBaseError(serverError)) {
@@ -54,11 +52,15 @@ export default function RegisterForm() {
                         setFocus("email")
                         setFormError("email", {
                             type: "manual",
-                            message: "Email already in use.",
+                            message: serverError.description,
                         })
 
                         return
                     case HttpStatusCodes.BAD_REQUEST:
+                        setErrorMessage(serverError.description)
+
+                        return
+                    default:
                         setErrorMessage(serverError.description)
 
                         return
@@ -71,7 +73,6 @@ export default function RegisterForm() {
             const { data } = args
 
             setErrorMessage("")
-            setSuccessMessage("")
 
             if (data?.success.message) {
                 setSuccessMessage(data.success.message)
@@ -81,7 +82,7 @@ export default function RegisterForm() {
         },
     })
 
-    const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
+    const onSubmit = (values: RegisterInput) => {
         execute(values)
     }
 
@@ -148,7 +149,7 @@ export default function RegisterForm() {
                 <ErrorMessage message={errorMessage} />
                 <SuccessMessage message={successMessage} />
 
-                <Button disabled={isExecuting} className="w-full">
+                <Button className="w-full" disabled={isExecuting}>
                     Sign up
                 </Button>
 
@@ -165,6 +166,7 @@ export default function RegisterForm() {
                             callbackUrl: "/",
                         })
                     }
+                    disabled={isExecuting}
                 >
                     Sign in with Github
                     <FaGithub className="w-5 h-5" />

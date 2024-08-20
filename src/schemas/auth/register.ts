@@ -20,3 +20,5 @@ export const RegisterSchema = z
             })
         }
     })
+
+export type RegisterInput = z.infer<typeof RegisterSchema>
