@@ -25,7 +25,7 @@ export const login = actionClient
                 redirect: true,
                 email,
                 password: password,
-                callbackUrl: "/",
+                redirectTo: "/",
             })
 
             return { success: "Successfully signed in." }
@@ -46,13 +46,13 @@ export const login = actionClient
                         })
                     }
                 }
+            }
 
+            if (error instanceof Error) {
                 throw new InternalServerError({
                     id: createId(),
                     description: error.message,
                 })
             }
-
-            throw new InternalServerError({ id: createId() })
         }
     })

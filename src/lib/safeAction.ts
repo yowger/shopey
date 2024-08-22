@@ -37,7 +37,7 @@ export const actionClient = createSafeActionClient({
                 description: message,
                 httpStatusCode,
                 isOperational,
-            } as ErrorDetails
+            } satisfies ErrorDetails
         }
 
         return GENERIC_ERROR_MESSAGE

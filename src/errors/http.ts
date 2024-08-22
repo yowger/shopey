@@ -118,7 +118,7 @@ export class ConflictError extends BaseError {
 
 export class InternalServerError extends BaseError {
     constructor(details?: VariantErrorDetails) {
-        const { id, description = "RServer error." } = details || {}
+        const { id, description = "Server error." } = details || {}
 
         super({
             id,

@@ -68,10 +68,6 @@ export default function LoginForm() {
                         })
 
                         return
-                    default:
-                        setErrorMessage(serverError.description)
-
-                        return
                 }
             }
 
