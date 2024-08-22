@@ -8,7 +8,10 @@ export enum HttpStatusCodes {
     INTERNAL_SERVER_ERROR = 500,
 }
 
+export type ErrorId = string | undefined
+
 export interface ErrorDetails {
+    id?: ErrorId
     name: string
     description: string
     httpStatusCode: HttpStatusCodes
@@ -16,10 +19,12 @@ export interface ErrorDetails {
 }
 
 export class BaseError extends Error {
+    public readonly id: ErrorId
     public readonly httpStatusCode: HttpStatusCodes
     public readonly isOperational: boolean
 
     constructor({
+        id = undefined,
         name,
         description,
         httpStatusCode,
@@ -28,6 +33,7 @@ export class BaseError extends Error {
         super(description)
 
         Object.setPrototypeOf(this, new.target.prototype)
+        this.id = id
         this.name = name
         this.httpStatusCode = httpStatusCode
         this.isOperational = isOperational
@@ -36,11 +42,18 @@ export class BaseError extends Error {
     }
 }
 
+export type VariantErrorDetails = Partial<
+    Pick<ErrorDetails, "id" | "description">
+>
+
 export class BadRequestError extends BaseError {
-    constructor(description = "Bad request.") {
+    constructor(details?: VariantErrorDetails) {
+        const { id, description = "Bad request" } = details || {}
+
         super({
+            id,
             name: "BadRequestError",
-            description,
+            description: description,
             httpStatusCode: HttpStatusCodes.BAD_REQUEST,
             isOperational: true,
         })
@@ -48,8 +61,11 @@ export class BadRequestError extends BaseError {
 }
 
 export class UnauthorizedError extends BaseError {
-    constructor(description = "Unauthorized access.") {
+    constructor(details?: VariantErrorDetails) {
+        const { id, description = "Unauthorized access." } = details || {}
+
         super({
+            id,
             name: "UnauthorizedError",
             description,
             httpStatusCode: HttpStatusCodes.UNAUTHORIZED,
@@ -59,8 +75,11 @@ export class UnauthorizedError extends BaseError {
 }
 
 export class ForbiddenError extends BaseError {
-    constructor(description = "Access forbidden.") {
+    constructor(details?: VariantErrorDetails) {
+        const { id, description = "Access forbidden." } = details || {}
+
         super({
+            id,
             name: "ForbiddenError",
             description,
             httpStatusCode: HttpStatusCodes.FORBIDDEN,
@@ -70,8 +89,11 @@ export class ForbiddenError extends BaseError {
 }
 
 export class NotFoundError extends BaseError {
-    constructor(description = "Resource not found.") {
+    constructor(details: VariantErrorDetails) {
+        const { id, description = "Resource not found." } = details || {}
+
         super({
+            id,
             name: "NotFoundError",
             description,
             httpStatusCode: HttpStatusCodes.NOT_FOUND,
@@ -81,8 +103,11 @@ export class NotFoundError extends BaseError {
 }
 
 export class ConflictError extends BaseError {
-    constructor(description = "Request conflict.") {
+    constructor(details?: VariantErrorDetails) {
+        const { id, description = "Request conflict." } = details || {}
+
         super({
+            id,
             name: "ConflictError",
             description,
             httpStatusCode: HttpStatusCodes.CONFLICT,
@@ -92,12 +117,15 @@ export class ConflictError extends BaseError {
 }
 
 export class InternalServerError extends BaseError {
-    constructor(description = "Server error.") {
+    constructor(details?: VariantErrorDetails) {
+        const { id, description = "RServer error." } = details || {}
+
         super({
+            id,
             name: "InternalServerError",
             description,
             httpStatusCode: HttpStatusCodes.INTERNAL_SERVER_ERROR,
-            isOperational: true,
+            isOperational: false,
         })
     }
 }

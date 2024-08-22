@@ -1,18 +1,18 @@
 "use server"
 
+import { AuthError } from "next-auth"
+import { createId } from "@paralleldrive/cuid2"
+
 import { actionClient } from "@/lib/safeAction"
 
-import { findUserByEmail } from "@/server/service/user"
 import { signIn } from "@/server/auth"
 
 import { LoginSchema } from "@/schemas/auth/login"
 
 import {
-    BadRequestError,
-    BaseError,
-    ConflictError,
     InternalServerError,
     NotFoundError,
+    UnauthorizedError,
 } from "@/errors/http"
 
 export const login = actionClient
@@ -20,31 +20,39 @@ export const login = actionClient
     .action(async ({ parsedInput }) => {
         const { email, password } = parsedInput
 
-        const user = await findUserByEmail(email)
-
-        if (!user) {
-            throw new NotFoundError("Email not registered.")
-        }
-
         try {
-            const result = await signIn("credentials", {
-                redirect: false,
+            await signIn("credentials", {
+                redirect: true,
                 email,
                 password: password,
+                callbackUrl: "/",
             })
-
-            console.log("cool result ", result)
-            if (result) {
-            }
 
             return { success: "Successfully signed in." }
         } catch (error: unknown) {
-            if (error instanceof Error) {
-                if (error.name === "CredentialsSignin") {
-                    throw new BadRequestError("Invalid credentials")
+            if (error instanceof AuthError) {
+                if (error.type === "CallbackRouteError") {
+                    const cause = error.cause?.err
+
+                    if (cause instanceof NotFoundError) {
+                        throw new NotFoundError({
+                            id: createId(),
+                            description: cause.message,
+                        })
+                    } else if (cause instanceof UnauthorizedError) {
+                        throw new UnauthorizedError({
+                            id: createId(),
+                            description: cause.message,
+                        })
+                    }
                 }
+
+                throw new InternalServerError({
+                    id: createId(),
+                    description: error.message,
+                })
             }
 
-            throw new InternalServerError()
+            throw new InternalServerError({ id: createId() })
         }
     })

@@ -6,10 +6,14 @@ import Credentials from "next-auth/providers/credentials"
 
 import { db } from "./db"
 import { DrizzleAdapter } from "@auth/drizzle-adapter"
+
 import env from "@/config/env/server"
 
-import type { NextAuthConfig } from "next-auth"
 import { findUserByEmail } from "@/server/service/user"
+
+import { NotFoundError, UnauthorizedError } from "@/errors/http"
+
+import type { NextAuthConfig } from "next-auth"
 
 const config = {
     adapter: DrizzleAdapter(db),
@@ -26,7 +30,7 @@ const config = {
 
                 const user = await findUserByEmail(email)
                 if (!user) {
-                    return null
+                    throw new NotFoundError({ description: "Email not found." })
                 }
 
                 const isValidPassword = await bcrypt.compare(
@@ -34,7 +38,9 @@ const config = {
                     user.password
                 )
                 if (!isValidPassword) {
-                    return null
+                    throw new UnauthorizedError({
+                        description: "Invalid credentials.",
+                    })
                 }
 
                 return user

@@ -1,6 +1,7 @@
 "use server"
 
 import bcrpyt from "bcrypt"
+import { createId } from "@paralleldrive/cuid2"
 
 import { actionClient } from "@/lib/safeAction"
 
@@ -10,7 +11,7 @@ import { createOtp } from "@/server/service/auth"
 
 import { RegisterSchema } from "@/schemas/auth/register"
 
-import { BadRequestError, ConflictError } from "@/errors/http"
+import { ConflictError, InternalServerError } from "@/errors/http"
 
 import { calculateExpirationTimeInMin } from "@/utils/time"
 import { generateOtp } from "@/utils/generateOtp"
@@ -26,7 +27,10 @@ export const register = actionClient
         const existingUser = await findUserByEmail(email)
 
         if (existingUser) {
-            throw new ConflictError("Email already in use.")
+            throw new ConflictError({
+                id: createId(),
+                description: "Email already in use.",
+            })
         }
 
         try {
@@ -66,6 +70,8 @@ export const register = actionClient
                 },
             }
         } catch (error) {
-            throw new BadRequestError("An error occurred during registration.")
+            throw new InternalServerError({
+                id: createId(),
+            })
         }
     })

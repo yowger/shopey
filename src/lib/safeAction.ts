@@ -13,20 +13,26 @@ export const actionClient = createSafeActionClient({
     defaultValidationErrorsShape: "flattened",
     handleServerErrorLog: (error) => {
         if (error instanceof BaseError) {
-            logError(error, error.isOperational, {
-                httpStatusCode: error.httpStatusCode,
+            logError({
+                id: error.id,
+                error,
+                operational: error.isOperational,
+                context: {
+                    httpStatusCode: error.httpStatusCode,
+                },
             })
 
             return
         }
 
-        logError(error, false)
+        logError({ error, operational: false })
     },
     handleReturnedServerError(error) {
         if (error instanceof BaseError) {
-            const { name, message, httpStatusCode, isOperational } = error
+            const { id, name, message, httpStatusCode, isOperational } = error
 
             return {
+                id,
                 name,
                 description: message,
                 httpStatusCode,

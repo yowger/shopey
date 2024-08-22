@@ -60,8 +60,12 @@ export default function LoginForm() {
                         })
 
                         return
-                    case HttpStatusCodes.BAD_REQUEST:
-                        setErrorMessage(serverError.description)
+                    case HttpStatusCodes.UNAUTHORIZED:
+                        setFocus("password")
+                        setFormError("password", {
+                            type: "manual",
+                            message: serverError.description,
+                        })
 
                         return
                     default:

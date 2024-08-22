@@ -3,6 +3,7 @@ import logger from ".."
 export const errorLogger = logger.child({ module: "error" })
 
 export type ErrorLog = {
+    id?: string
     operational: boolean
     context?: Record<string, unknown>
     name: string
@@ -10,12 +11,18 @@ export type ErrorLog = {
     stack?: string
 }
 
-export function logError(
-    error: Error,
-    operational: boolean,
+interface LogError {
+    id?: string
+    error: Error
+    operational: boolean
     context?: Record<string, unknown>
-): void {
+}
+
+export function logError(details: LogError): void {
+    const { id, error, context, operational } = details
+
     const errorLog: ErrorLog = {
+        id,
         operational,
         context,
         name: error.name,
