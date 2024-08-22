@@ -6,6 +6,7 @@ import { FaGithub } from "react-icons/fa"
 import { useAction } from "next-safe-action/hooks"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
+import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 
 import { LoginSchema } from "@/schemas/auth/login"
@@ -38,12 +39,13 @@ export default function LoginForm() {
     const [errorMessage, setErrorMessage] = useState("")
     const [successMessage, setSuccessMessage] = useState("")
 
+    const router = useRouter()
     const form = useForm<LoginInput>({
         resolver: zodResolver(LoginSchema),
     })
     const { setError: setFormError, setFocus } = form
 
-    const { execute, isExecuting } = useAction(login, {
+    const { execute, isExecuting, hasSucceeded } = useAction(login, {
         onError: (args) => {
             const { error } = args
             const { serverError } = error
@@ -77,6 +79,10 @@ export default function LoginForm() {
             setErrorMessage("")
 
             setSuccessMessage("sign in successfully")
+
+            setTimeout(() => {
+                router.push("/")
+            }, 1000)
         },
     })
 
@@ -134,7 +140,11 @@ export default function LoginForm() {
                     Forgot your password
                 </Link> */}
 
-                <Button type="submit" className="w-full" disabled={isExecuting}>
+                <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={isExecuting || hasSucceeded}
+                >
                     Sign in
                 </Button>
 
@@ -143,7 +153,6 @@ export default function LoginForm() {
                 </p>
 
                 <Button
-                    className="flex gap-4 w-full"
                     variant={"outline"}
                     onClick={() =>
                         signIn("github", {
@@ -151,6 +160,8 @@ export default function LoginForm() {
                             callbackUrl: "/",
                         })
                     }
+                    className="flex gap-4 w-full"
+                    disabled={isExecuting || hasSucceeded}
                 >
                     Sign in with Github
                     <FaGithub className="w-5 h-5" />

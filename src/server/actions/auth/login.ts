@@ -22,29 +22,31 @@ export const login = actionClient
 
         try {
             await signIn("credentials", {
-                redirect: true,
+                redirect: false,
                 email,
                 password: password,
-                redirectTo: "/",
             })
 
             return { success: "Successfully signed in." }
         } catch (error: unknown) {
             if (error instanceof AuthError) {
-                if (error.type === "CallbackRouteError") {
-                    const cause = error.cause?.err
+                switch (error.type) {
+                    case "CallbackRouteError":
+                        const cause = error.cause?.err
 
-                    if (cause instanceof NotFoundError) {
-                        throw new NotFoundError({
-                            id: createId(),
-                            description: cause.message,
-                        })
-                    } else if (cause instanceof UnauthorizedError) {
-                        throw new UnauthorizedError({
-                            id: createId(),
-                            description: cause.message,
-                        })
-                    }
+                        if (cause instanceof NotFoundError) {
+                            throw new NotFoundError({
+                                id: createId(),
+                                description: cause.message,
+                            })
+                        } else if (cause instanceof UnauthorizedError) {
+                            throw new UnauthorizedError({
+                                id: createId(),
+                                description: cause.message,
+                            })
+                        }
+
+                        break
                 }
             }
 
