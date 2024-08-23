@@ -81,7 +81,7 @@ export default function LoginForm() {
             setSuccessMessage("sign in successfully")
 
             setTimeout(() => {
-                router.push("/")
+                router.push("dashboard/")
             }, 1000)
         },
     })

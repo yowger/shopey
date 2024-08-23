@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils"
 import "./globals.css"
 
 import type { Metadata } from "next"
+import type { ReactNode } from "react"
 
 const fontSans = FontSans({
     subsets: ["latin"],
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
 }
 
 interface RootLayoutProps {
-    children: React.ReactNode
+    children: ReactNode
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
@@ -26,7 +27,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
             <head />
             <body
                 className={cn(
-                    "flex flex-grow min-h-screen bg-slate-900 font-sans antialiased",
+                    "flex-grow min-h-screen font-sans antialiased max-w-8xl mx-auto px-6 md:px-12",
                     fontSans.variable
                 )}
             >
