@@ -44,7 +44,7 @@ export default function RichTextEditor(props: RichTextEditorProps) {
         },
         editorProps: {
             attributes: {
-                class: "prose prose-sm sm:prose lg:prose-lg xl:prose-2xl min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+                class: "prose prose-sm sm:prose lg:prose-lg min-h-20 w-full min-w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
             },
         },
     })
@@ -54,7 +54,7 @@ export default function RichTextEditor(props: RichTextEditorProps) {
     }
 
     return (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 w-full">
             <div className="border-input border rounded-md">
                 <ToggleBold editor={editor} />
                 <ToggleItalic editor={editor} />
