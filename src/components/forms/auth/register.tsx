@@ -37,7 +37,7 @@ export default function RegisterForm() {
     const form = useForm<RegisterInput>({
         resolver: zodResolver(RegisterSchema),
     })
-    const { setError: setFormError, setFocus } = form
+    const { handleSubmit, setError: setFormError, setFocus } = form
 
     const { execute, isExecuting } = useAction(register, {
         onError: (args) => {
@@ -88,7 +88,7 @@ export default function RegisterForm() {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <FormField
                     control={form.control}
                     name="name"

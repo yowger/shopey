@@ -43,7 +43,7 @@ export default function LoginForm() {
     const form = useForm<LoginInput>({
         resolver: zodResolver(LoginSchema),
     })
-    const { setError: setFormError, setFocus } = form
+    const { handleSubmit, setError: setFormError, setFocus } = form
 
     const { execute, isExecuting, hasSucceeded } = useAction(login, {
         onError: (args) => {
@@ -92,7 +92,7 @@ export default function LoginForm() {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <FormField
                     control={form.control}
                     name="email"

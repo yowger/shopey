@@ -27,7 +27,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
             <head />
             <body
                 className={cn(
-                    "flex-grow min-h-screen font-sans antialiased max-w-8xl mx-auto px-6 md:px-12",
+                    "flex-grow min-h-screen font-sans antialiased max-w-7xl mx-auto px-6 md:px-12",
                     fontSans.variable
                 )}
             >
