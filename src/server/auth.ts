@@ -15,7 +15,7 @@ import { NotFoundError, UnauthorizedError } from "@/errors/http"
 
 import type { NextAuthConfig } from "next-auth"
 
-const config = {
+export const authOptions = {
     adapter: DrizzleAdapter(db),
     session: { strategy: "jwt" },
     secret: env.AUTH_SECRET,
@@ -56,17 +56,21 @@ const config = {
         // }),
     ],
     callbacks: {
-        async session(args) {
-            const { session } = args
-
-            return session
-        },
         async jwt(args) {
             const { token } = args
 
             return token
         },
+        async session(args) {
+            const { session, token } = args
+
+            if (token.sub) {
+                session.user.sub = token.sub
+            }
+
+            return session
+        },
     },
 } satisfies NextAuthConfig
 
-export const { handlers, auth, signIn, signOut } = NextAuth(config)
+export const { handlers, auth, signIn, signOut } = NextAuth(authOptions)

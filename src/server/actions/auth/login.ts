@@ -3,8 +3,6 @@
 import { AuthError } from "next-auth"
 import { createId } from "@paralleldrive/cuid2"
 
-import { actionClient } from "@/lib/safeAction"
-
 import { signIn } from "@/server/auth"
 
 import { LoginSchema } from "@/schemas/auth/login"
@@ -14,6 +12,8 @@ import {
     NotFoundError,
     UnauthorizedError,
 } from "@/errors/http"
+import { actionClient } from "@/lib/safe-action/public"
+
 
 export const login = actionClient
     .schema(LoginSchema)

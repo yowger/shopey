@@ -3,7 +3,7 @@
 import bcrpyt from "bcrypt"
 import { createId } from "@paralleldrive/cuid2"
 
-import { actionClient } from "@/lib/safeAction"
+import { actionClient } from "@/lib/safe-action/public"
 
 import { createUser, findUserByEmail } from "@/server/service/user"
 import { sendOtpEmail } from "@/server/actions/email/sendOtp"
