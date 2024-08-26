@@ -1,15 +1,14 @@
 "use server"
 
-import { AuthError } from "next-auth"
 import { createId } from "@paralleldrive/cuid2"
 
-// import { signIn } from "@/server/auth"
+import { actionClient } from "@/lib/safe-action/public"
 
 import { CreateProductSchema } from "@/schemas/product/add"
 
-import { InternalServerError } from "@/errors/http"
-import { actionClient } from "@/lib/safe-action/public"
 import { createProduct } from "@/server/service/product"
+
+import { InternalServerError } from "@/errors/http"
 
 export const addProduct = actionClient
     .schema(CreateProductSchema)
