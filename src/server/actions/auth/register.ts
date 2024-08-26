@@ -34,7 +34,7 @@ export const register = actionClient
         }
 
         try {
-            const userId = await createUser({
+            const user = await createUser({
                 name,
                 email,
                 password: hashedPassword,
@@ -44,7 +44,7 @@ export const register = actionClient
             const expirationTime = calculateExpirationTimeInMin(15)
 
             await createOtp({
-                userId,
+                userId: user.id,
                 code: otpCode,
                 expires: expirationTime,
             })

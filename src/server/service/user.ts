@@ -8,10 +8,12 @@ import type { User } from "../types/user"
 
 export type UserInput = Pick<User, "name" | "email" | "password">
 
-export async function createUser(userInput: UserInput): Promise<string> {
+export async function createUser(
+    userInput: UserInput
+): Promise<{ id: string }> {
     const { name, email, password } = userInput
 
-    const createdUser = await db
+    const [createdUser] = await db
         .insert(usersSchema)
         .values({
             name,
@@ -20,7 +22,7 @@ export async function createUser(userInput: UserInput): Promise<string> {
         })
         .returning({ id: usersSchema.id })
 
-    return createdUser[0].id
+    return createdUser
 }
 
 export async function findUserByEmail(

@@ -37,8 +37,12 @@ export default function ProductForm() {
     const { handleSubmit, setError: setFormError, setFocus } = form
 
     const { execute, isExecuting, hasSucceeded } = useAction(addProduct, {
-        onError: (args) => {},
-        onSuccess: (args) => {},
+        onError: (args) => {
+            console.log("🚀 ~ ProductForm ~ args:", args)
+        },
+        onSuccess: (args) => {
+            console.log("🚀 ~ ProductForm ~ args:", args)
+        },
     })
 
     async function onSubmit(values: ProductInput) {

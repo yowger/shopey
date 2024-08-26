@@ -9,20 +9,24 @@ import { ProductSchema } from "@/schemas/product/add"
 
 import { InternalServerError } from "@/errors/http"
 import { actionClient } from "@/lib/safe-action/public"
+import { createProduct } from "@/server/service/product"
 
 export const addProduct = actionClient
     .schema(ProductSchema)
     .action(async ({ parsedInput }) => {
-        const { id, title, description, price } = parsedInput
+        const { title, description, price } = parsedInput
 
         try {
-            // return { success: "Successfully signed in." }
-        } catch (error: unknown) {
-            // if (error instanceof AuthError) {
-            //     switch (error.type) {
-            //     }
-            // }
+            const createdProduct = await createProduct({
+                title,
+                description,
+                price,
+            })
 
+            return {
+                success: `Product "${createdProduct.title}" created successfully.`,
+            }
+        } catch (error: unknown) {
             if (error instanceof Error) {
                 throw new InternalServerError({
                     id: createId(),
