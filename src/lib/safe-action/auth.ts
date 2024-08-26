@@ -5,7 +5,6 @@ export const authActionClient = actionClient.use(async (args) => {
     const { next } = args
 
     const session = await auth()
-    console.log("🚀 ~ authActionClient ~ session:", session)
     if (!session) {
         throw new Error("Session not found.")
     }

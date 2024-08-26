@@ -2,31 +2,31 @@ import { eq } from "drizzle-orm"
 
 import { db } from "../db"
 
-import { users } from "../schema"
+import { usersSchema } from "../schema/user"
 
-import type { InsertUser } from "../types/user"
+import type { User } from "../types/user"
 
-export type CreateUserData = Pick<InsertUser, "name" | "email" | "password">
+export type UserInput = Pick<User, "name" | "email" | "password">
 
-export async function createUser(userData: CreateUserData): Promise<string> {
-    const { name, email, password } = userData
+export async function createUser(userInput: UserInput): Promise<string> {
+    const { name, email, password } = userInput
 
     const createdUser = await db
-        .insert(users)
+        .insert(usersSchema)
         .values({
             name,
             email: email.toLocaleLowerCase(),
             password,
         })
-        .returning({ id: users.id })
+        .returning({ id: usersSchema.id })
 
     return createdUser[0].id
 }
 
 export async function findUserByEmail(
     email: string
-): Promise<InsertUser | undefined> {
-    return await db.query.users.findFirst({
-        where: eq(users.email, email.toLocaleLowerCase()),
+): Promise<User | undefined> {
+    return await db.query.usersSchema.findFirst({
+        where: eq(usersSchema.email, email.toLocaleLowerCase()),
     })
 }

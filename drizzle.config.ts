@@ -7,7 +7,7 @@ dotenv.config({
 
 export default defineConfig({
     dialect: "postgresql",
-    schema: "./src/server/schema.ts",
+    schema: "./src/server/schema",
     out: "./src/server/migrations",
     dbCredentials: {
         url: process.env.AUTH_DRIZZLE_URL!,

@@ -1,3 +1,3 @@
-import { otp } from "../schema"
+import { otpSchema } from "../schema/otp"
 
-export type InsertOtp = typeof otp.$inferSelect
+export type Otp = typeof otpSchema.$inferSelect

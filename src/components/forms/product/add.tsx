@@ -1,10 +1,13 @@
 "use client"
 
+import { useAction } from "next-safe-action/hooks"
 import { useForm } from "react-hook-form"
 import { PhilippinePeso } from "lucide-react"
 import { zodResolver } from "@hookform/resolvers/zod"
 
 import { ProductSchema } from "@/schemas/product/add"
+
+import { addProduct } from "@/server/actions/products/add"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -33,8 +36,13 @@ export default function ProductForm() {
     })
     const { handleSubmit, setError: setFormError, setFocus } = form
 
+    const { execute, isExecuting, hasSucceeded } = useAction(addProduct, {
+        onError: (args) => {},
+        onSuccess: (args) => {},
+    })
+
     async function onSubmit(values: ProductInput) {
-        console.log("submitted: ", values)
+        execute(values)
     }
 
     return (
@@ -106,7 +114,11 @@ export default function ProductForm() {
                                 </FormItem>
                             )}
                         />
-                        <Button type="submit" className="w-full">
+                        <Button
+                            type="submit"
+                            className="w-full"
+                            disabled={isExecuting}
+                        >
                             Create product
                         </Button>
                     </form>

@@ -1,15 +1,15 @@
 import { db } from "../db"
 
-import { otp, users } from "../schema"
+import { otpSchema } from "../schema/otp"
 
-import { InsertOtp } from "../types/auth"
+import type { Otp } from "../types/auth"
 
-export type CreateOtpData = Pick<InsertOtp, "userId" | "code" | "expires">
+export type OtpInput = Pick<Otp, "userId" | "code" | "expires">
 
-export async function createOtp(otpData: CreateOtpData): Promise<void> {
-    const { userId, code, expires } = otpData
+export async function createOtp(otpInput: OtpInput): Promise<void> {
+    const { userId, code, expires } = otpInput
 
-    await db.insert(otp).values({
+    await db.insert(otpSchema).values({
         userId,
         code,
         expires,
