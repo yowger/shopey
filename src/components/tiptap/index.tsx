@@ -22,10 +22,11 @@ import type { LucideIcon } from "lucide-react"
 interface RichTextEditorProps {
     value: string
     onChange: (value: string) => void
+    tabIndex?: number | undefined
 }
 
 export default function RichTextEditor(props: RichTextEditorProps) {
-    const { value, onChange } = props
+    const { tabIndex = undefined, value, onChange } = props
 
     const editor = useEditor({
         extensions: [
@@ -67,7 +68,7 @@ export default function RichTextEditor(props: RichTextEditorProps) {
                 <ToggleHeading editor={editor} level={5} Icon={Heading5} />
                 <ToggleHeading editor={editor} level={6} Icon={Heading6} />
             </div>
-            <EditorContent editor={editor} />
+            <EditorContent tabIndex={tabIndex} editor={editor} />
         </div>
     )
 }

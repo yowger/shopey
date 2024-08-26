@@ -5,14 +5,14 @@ import { createId } from "@paralleldrive/cuid2"
 
 // import { signIn } from "@/server/auth"
 
-import { ProductSchema } from "@/schemas/product/add"
+import { CreateProductSchema } from "@/schemas/product/add"
 
 import { InternalServerError } from "@/errors/http"
 import { actionClient } from "@/lib/safe-action/public"
 import { createProduct } from "@/server/service/product"
 
 export const addProduct = actionClient
-    .schema(ProductSchema)
+    .schema(CreateProductSchema)
     .action(async ({ parsedInput }) => {
         const { title, description, price } = parsedInput
 

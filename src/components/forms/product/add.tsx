@@ -2,10 +2,11 @@
 
 import { useAction } from "next-safe-action/hooks"
 import { useForm } from "react-hook-form"
+import { useRouter } from "next/navigation"
 import { PhilippinePeso } from "lucide-react"
 import { zodResolver } from "@hookform/resolvers/zod"
 
-import { ProductSchema } from "@/schemas/product/add"
+import { CreateProductSchema } from "@/schemas/product/add"
 
 import { addProduct } from "@/server/actions/products/add"
 
@@ -27,21 +28,39 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import RichTextEditor from "@/components/tiptap"
+import { useToast } from "@/components/ui/use-toast"
 
 import type { ProductInput } from "@/schemas/product/add"
 
 export default function ProductForm() {
-    const form = useForm<ProductInput>({
-        resolver: zodResolver(ProductSchema),
-    })
-    const { handleSubmit, setError: setFormError, setFocus } = form
+    const router = useRouter()
+    const { toast } = useToast()
 
-    const { execute, isExecuting, hasSucceeded } = useAction(addProduct, {
+    const form = useForm<ProductInput>({
+        resolver: zodResolver(CreateProductSchema),
+    })
+    const { handleSubmit } = form
+
+    const { execute, isExecuting } = useAction(addProduct, {
         onError: (args) => {
-            console.log("🚀 ~ ProductForm ~ args:", args)
+            toast({
+                variant: "destructive",
+                title: "Product creation failed.",
+                description: "There was a problem creating the product.",
+            })
         },
         onSuccess: (args) => {
-            console.log("🚀 ~ ProductForm ~ args:", args)
+            const { data } = args
+
+            const successMessage =
+                data?.success || "Product created successfully."
+
+            router.push("/dashboard/products")
+
+            toast({
+                title: "Product created.",
+                description: successMessage,
+            })
         },
     })
 
@@ -71,6 +90,7 @@ export default function ProductForm() {
                                         <Input
                                             {...field}
                                             placeholder="Product title"
+                                            tabIndex={1}
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -87,6 +107,7 @@ export default function ProductForm() {
                                         <RichTextEditor
                                             value={field.value}
                                             onChange={field.onChange}
+                                            tabIndex={2}
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -111,6 +132,7 @@ export default function ProductForm() {
                                                 placeholder="Price in Philippine peso"
                                                 step="0.1"
                                                 min={0}
+                                                tabIndex={3}
                                             />
                                         </div>
                                     </FormControl>
@@ -122,6 +144,7 @@ export default function ProductForm() {
                             type="submit"
                             className="w-full"
                             disabled={isExecuting}
+                            tabIndex={4}
                         >
                             Create product
                         </Button>
