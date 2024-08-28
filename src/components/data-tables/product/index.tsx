@@ -10,6 +10,7 @@ import {
 } from "@tanstack/react-table"
 
 import { DataTablePagination } from "../pagination"
+import { DataTableToolbar } from "./header"
 import {
     Table,
     TableBody,
@@ -98,6 +99,7 @@ export function ProductDataTable<TData, TValue>(
 
     return (
         <div className="space-y-4">
+            <DataTableToolbar table={table} />
             <div className="rounded-md border">
                 <Table>
                     <TableHeader>
