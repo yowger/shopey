@@ -5,25 +5,26 @@ import { db } from "../db"
 import { productsSchema } from "../schema/product"
 
 import type { Pagination, Sort } from "../types/table"
-import { productColumns, type Product } from "../types/product"
+import type { Product } from "../types/product"
 
 export type PartialProduct = Omit<Product, "description">
 export type ProductKeys = keyof PartialProduct
-export type ProductSortColumns = Sort<ProductKeys>[]
+export type ProductSortColumns = Sort<ProductKeys>
 
 interface GetProductsWithPagination {
     pagination: Pagination
-    sort?: ProductSortColumns
+    sort?: ProductSortColumns | undefined
 }
 
 export function isProductKey(key: string): key is ProductKeys {
+    // Todo refactor, avoid redundancy
     return ["id", "title", "created", "price"].includes(key)
 }
 
 export async function getProductsWithPagination(
     params: GetProductsWithPagination
 ) {
-    const { pagination, sort = [] } = params
+    const { pagination, sort } = params
     const { page = 1, limit = 10 } = pagination
 
     const offset = (page - 1) * limit
@@ -38,18 +39,13 @@ export async function getProductsWithPagination(
         .limit(limit)
         .$dynamic()
 
-    if (sort.length > 0) {
-        // const orderByClauses = sort.map((sortItem) => {
-        //     return sortItem.order === "asc"
-        //         ? asc(productsSchema[sortItem.column])
-        //         : desc(productsSchema[sortItem.column])
-        // })
+    if (sort) {
+        const sortByClause =
+            sort.order === "desc"
+                ? desc(productsSchema[sort.column])
+                : asc(productsSchema[sort.column])
 
-        // productQuery = productQuery.orderBy(...orderByClauses)
-        productQuery = productQuery.orderBy(
-            desc(productsSchema["title"]),
-            asc(productsSchema["created"]),
-        )
+        productQuery = productQuery.orderBy(sortByClause)
     }
 
     const [products, totalProducts] = await Promise.all([

@@ -3,7 +3,6 @@ import { Suspense } from "react"
 import {
     getProductsWithPagination,
     isProductKey,
-    ProductKeys,
     ProductSortColumns,
 } from "@/server/service/product"
 
@@ -17,6 +16,7 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 
+import type { OrderBy } from "@/server/types/table"
 import type { SortingState } from "@tanstack/react-table"
 
 interface ProductProps {
@@ -25,49 +25,33 @@ interface ProductProps {
         page?: number
         limit?: number
         sort?: string
+        orderBy?: OrderBy
     }
 }
 
 export default async function Product(props: ProductProps) {
     const { searchParams } = props
 
-    const limit = Number(searchParams?.limit) || 10
-    const query = searchParams?.query || ""
-    const currentPage = Number(searchParams?.page) || 1
-    const sort = searchParams?.sort || ""
+    const {
+        query = "",
+        page = 1,
+        limit = 10,
+        sort = "",
+        orderBy = "desc",
+    } = searchParams || {}
 
-    const sortState = sort.split(",").map((sortItem) => {
-        const [id, order] = sortItem.split(":")
-        const isDesc = order === "desc"
+    const sortState = createSortState(sort, orderBy)
+    const sortParams = createSortParams(sort, orderBy)
 
-        return {
-            desc: isDesc,
-            id: id.trim(),
-        }
-    }) satisfies SortingState
-
-    // const sortParams  = sortState.map((sortItem) => ({
-    //     columns: sortItem.id,
-    //     order: sortItem.desc ? "desc" : "asc",
-    // })) satisfies ProductSortColumns
-
-    const sortParams = sortState
-        .filter((sortItem) => isProductKey(sortItem.id))
-        .map((sortItem) => ({
-            column: sortItem.id as ProductKeys,
-            order: sortItem.desc ? "desc" : "asc",
-        })) satisfies ProductSortColumns
-    console.log("🚀 ~ Product ~ sortParams:", sortParams)
-
-    const { products, total: totalProducts } = await getProductsWithPagination({
+    const { products, total } = await getProductsWithPagination({
         pagination: {
-            page: currentPage,
+            page,
             limit,
         },
         sort: sortParams,
     })
 
-    const suspenseKey = limit + query + currentPage
+    const suspenseKey = searchParams?.toString()
 
     return (
         <Card>
@@ -80,15 +64,38 @@ export default async function Product(props: ProductProps) {
                     <ProductDataTable
                         columns={columns}
                         data={products}
-                        rowCount={totalProducts}
+                        rowCount={total}
                         sort={sortState}
                         pagination={{
                             pageSize: limit,
-                            pageIndex: currentPage,
+                            pageIndex: page,
                         }}
                     />
                 </Suspense>
             </CardContent>
         </Card>
     )
+}
+
+function createSortState(sort: string, orderBy: OrderBy): SortingState {
+    if (!sort) return []
+
+    return [
+        {
+            id: sort,
+            desc: orderBy === "desc",
+        },
+    ]
+}
+
+function createSortParams(
+    sort: string,
+    orderBy: OrderBy
+): ProductSortColumns | undefined {
+    if (!isProductKey(sort)) return undefined
+
+    return {
+        column: sort,
+        order: orderBy,
+    }
 }

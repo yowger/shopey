@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowUp, ChevronsUpDown, Eye } from "lucide-react"
+import { ArrowDown, ArrowUp, ChevronsUpDown, Eye, SortAsc } from "lucide-react"
 import { Column } from "@tanstack/react-table"
 
 import { cn } from "@/lib/utils"
@@ -48,13 +48,13 @@ export function DataTableColumnHeader<TData, TValue>({
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start">
                     <DropdownMenuItem
-                        onClick={() => column.toggleSorting(false, true)}
+                        onClick={() => column.toggleSorting(false)}
                     >
                         <ArrowUp className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
                         Asc
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                        onClick={() => column.toggleSorting(true, true)}
+                        onClick={() => column.toggleSorting(true)}
                     >
                         <ArrowDown className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
                         Desc

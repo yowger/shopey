@@ -1,4 +1,4 @@
-import { Column, getTableColumns, is } from "drizzle-orm"
+import { getTableColumns, is } from "drizzle-orm"
 
 import { productsSchema } from "../schema/product"
 

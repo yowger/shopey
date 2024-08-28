@@ -1,10 +1,10 @@
 "use client"
 
 import {
-    ChevronLeft,
-    ChevronRight,
-    ChevronsLeft,
-    ChevronsRight,
+    ArrowLeft,
+    ArrowRight,
+    ChevronLeftIcon,
+    ChevronRightIcon,
 } from "lucide-react"
 
 import { Table } from "@tanstack/react-table"
@@ -48,19 +48,14 @@ export function DataTablePagination<TData>({
                             />
                         </SelectTrigger>
                         <SelectContent side="top">
-                            {/* {[10, 20, 30, 40, 50].map((pageSize) => ( */}
-                            {[2, 5, 10].map(
-                                (
-                                    pageSize //test
-                                ) => (
-                                    <SelectItem
-                                        key={pageSize}
-                                        value={`${pageSize}`}
-                                    >
-                                        {pageSize}
-                                    </SelectItem>
-                                )
-                            )}
+                            {[10, 20, 30, 40, 50].map((pageSize) => (
+                                <SelectItem
+                                    key={pageSize}
+                                    value={`${pageSize}`}
+                                >
+                                    {pageSize}
+                                </SelectItem>
+                            ))}
                         </SelectContent>
                     </Select>
                 </div>
@@ -76,7 +71,7 @@ export function DataTablePagination<TData>({
                         disabled={!table.getCanPreviousPage()}
                     >
                         <span className="sr-only">Go to first page</span>
-                        <ChevronsLeft className="h-4 w-4" />
+                        <ArrowLeft className="h-4 w-4" />
                     </Button>
                     <Button
                         variant="outline"
@@ -85,7 +80,7 @@ export function DataTablePagination<TData>({
                         disabled={!table.getCanPreviousPage()}
                     >
                         <span className="sr-only">Go to previous page</span>
-                        <ChevronLeft className="h-4 w-4" />
+                        <ChevronLeftIcon className="h-4 w-4" />
                     </Button>
                     <Button
                         variant="outline"
@@ -94,7 +89,7 @@ export function DataTablePagination<TData>({
                         disabled={!table.getCanNextPage()}
                     >
                         <span className="sr-only">Go to next page</span>
-                        <ChevronRight className="h-4 w-4" />
+                        <ChevronRightIcon className="h-4 w-4" />
                     </Button>
                     <Button
                         variant="outline"
@@ -105,7 +100,7 @@ export function DataTablePagination<TData>({
                         disabled={!table.getCanNextPage()}
                     >
                         <span className="sr-only">Go to last page</span>
-                        <ChevronsRight className="h-4 w-4" />
+                        <ArrowRight className="h-4 w-4" />
                     </Button>
                 </div>
             </div>

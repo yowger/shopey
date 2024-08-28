@@ -62,7 +62,6 @@ export function ProductDataTable<TData, TValue>(
         },
         getCoreRowModel: getCoreRowModel(),
         onPaginationChange: (updater) => {
-            // refactor to 2 functions
             if (typeof updater !== "function") return
 
             const newPageState = updater(table.getState().pagination)
@@ -73,27 +72,27 @@ export function ProductDataTable<TData, TValue>(
             params.set("page", String(page))
             params.set("limit", String(pageSize))
 
-            replace(`${pathname}?${params.toString()}`)
+            const href = `${pathname}?${params.toString()}`
+            replace(href)
         },
         onSortingChange: (updater) => {
             if (typeof updater !== "function") return
 
             const newSortingState = updater(table.getState().sorting)
 
+            if (newSortingState.length === 0) {
+                return
+            }
+
             setSorting(newSortingState)
 
-            if (newSortingState.length > 0) {
-                const newSortParams = newSortingState
-                    .map((sort) => {
-                        const { id, desc } = sort
-                        return `${id}:${desc ? "desc" : "asc"}`
-                    })
-                    .join(",")
+            const { id, desc } = newSortingState[0]
+            const orderBy = desc ? "desc" : "asc"
+            params.set("sort", id)
+            params.set("orderBy", orderBy)
 
-                params.set("sort", newSortParams)
-
-                replace(`${pathname}?${params.toString()}`)
-            }
+            const href = `${pathname}?${params.toString()}`
+            replace(href)
         },
     })
 

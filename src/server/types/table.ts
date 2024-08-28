@@ -1,6 +1,8 @@
+export type OrderBy = "asc" | "desc"
+
 export interface Sort<T extends string | undefined = string> {
     column: T
-    order: "asc" | "desc"
+    order: OrderBy
 }
 
 export interface Pagination {
