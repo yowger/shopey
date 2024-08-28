@@ -4,11 +4,8 @@ import { useState } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 
 import {
-    ColumnDef,
     flexRender,
     getCoreRowModel,
-    getPaginationRowModel,
-    SortingState,
     useReactTable,
 } from "@tanstack/react-table"
 
@@ -22,6 +19,8 @@ import {
     TableRow,
 } from "@/components/ui/table"
 
+import type { ColumnDef, SortingState } from "@tanstack/react-table"
+
 interface Pagination {
     pageIndex: number
     pageSize: number
@@ -32,12 +31,13 @@ interface DataTableProps<TData, TValue> {
     data: TData[]
     rowCount: number
     pagination: Pagination
+    sort: SortingState
 }
 
 export function ProductDataTable<TData, TValue>(
     props: DataTableProps<TData, TValue>
 ) {
-    const { columns, data, rowCount, pagination } = props
+    const { columns, data, rowCount, sort, pagination } = props
 
     const pathname = usePathname()
     const { replace } = useRouter()
@@ -45,24 +45,24 @@ export function ProductDataTable<TData, TValue>(
     const params = new URLSearchParams(searchParams)
 
     const [rowSelection, setRowSelection] = useState({})
-    const [sorting, setSorting] = useState<SortingState>([])
+    const [sorting, setSorting] = useState<SortingState>(sort)
 
     const table = useReactTable({
         data,
         columns,
-        // enableRowSelection: true,
-        // onRowSelectionChange: setRowSelection,
-        // onSortingChange: setSorting,
-        manualPagination: true,
         rowCount: rowCount,
+        manualSorting: true,
+        manualPagination: true,
         state: {
             pagination: {
                 pageIndex: pagination.pageIndex - 1,
                 pageSize: pagination.pageSize,
             },
+            sorting,
         },
         getCoreRowModel: getCoreRowModel(),
         onPaginationChange: (updater) => {
+            // refactor to 2 functions
             if (typeof updater !== "function") return
 
             const newPageState = updater(table.getState().pagination)
@@ -74,6 +74,26 @@ export function ProductDataTable<TData, TValue>(
             params.set("limit", String(pageSize))
 
             replace(`${pathname}?${params.toString()}`)
+        },
+        onSortingChange: (updater) => {
+            if (typeof updater !== "function") return
+
+            const newSortingState = updater(table.getState().sorting)
+
+            setSorting(newSortingState)
+
+            if (newSortingState.length > 0) {
+                const newSortParams = newSortingState
+                    .map((sort) => {
+                        const { id, desc } = sort
+                        return `${id}:${desc ? "desc" : "asc"}`
+                    })
+                    .join(",")
+
+                params.set("sort", newSortParams)
+
+                replace(`${pathname}?${params.toString()}`)
+            }
         },
     })
 

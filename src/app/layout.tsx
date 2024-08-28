@@ -27,12 +27,11 @@ export default function RootLayout({ children }: RootLayoutProps) {
     return (
         <html lang="en" suppressHydrationWarning>
             <head />
-            <body>
+            <body className={cn("font-sans antialiased", fontSans.variable)}>
                 <div
-                    className={cn(
-                        "flex-grow min-h-screen font-sans antialiased max-w-7xl mx-auto px-6 md:px-12",
-                        fontSans.variable
-                    )}
+                    className={
+                        "flex-grow min-h-screen max-w-7xl mx-auto px-6 md:px-12"
+                    }
                 >
                     {children}
                     <Toaster />

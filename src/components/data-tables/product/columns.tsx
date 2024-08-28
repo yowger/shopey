@@ -5,6 +5,7 @@ import { MoreHorizontal } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
+import { DataTableColumnHeader } from "../columnHeader"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -43,15 +44,21 @@ export const columns: ColumnDef<Product>[] = [
     },
     {
         accessorKey: "id",
-        header: "ID",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="ID" />
+        ),
     },
     {
         accessorKey: "title",
-        header: "Title",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Title" />
+        ),
     },
     {
         accessorKey: "created",
-        header: "Date created",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Created" />
+        ),
     },
     {
         id: "actions",
