@@ -6,8 +6,9 @@ import {
     ChevronLeftIcon,
     ChevronRightIcon,
 } from "lucide-react"
-
 import { Table } from "@tanstack/react-table"
+
+import { PAGE_SIZES } from "@/config/tables"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -48,7 +49,7 @@ export function DataTablePagination<TData>({
                             />
                         </SelectTrigger>
                         <SelectContent side="top">
-                            {[10, 20, 30, 40, 50].map((pageSize) => (
+                            {PAGE_SIZES.map((pageSize) => (
                                 <SelectItem
                                     key={pageSize}
                                     value={`${pageSize}`}

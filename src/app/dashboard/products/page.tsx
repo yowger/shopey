@@ -6,6 +6,10 @@ import {
     ProductSortColumns,
 } from "@/server/service/product"
 
+import { PAGE_SIZES } from "@/config/tables"
+
+import { validatePageSize } from "@/utils/table/index"
+
 import { ProductDataTable } from "@/components/data-tables/product"
 import { columns } from "@/components/data-tables/product/columns"
 import {
@@ -40,13 +44,14 @@ export default async function Product(props: ProductProps) {
         orderBy = "desc",
     } = searchParams || {}
 
+    const validatedLimit = validatePageSize(Number(limit), PAGE_SIZES)
     const sortState = createSortState(sort, orderBy)
     const sortParams = createSortParams(sort, orderBy)
 
     const { products, total } = await getProductsWithPagination({
         pagination: {
             page,
-            limit,
+            limit: validatedLimit,
         },
         sort: sortParams,
     })
@@ -67,7 +72,7 @@ export default async function Product(props: ProductProps) {
                         rowCount={total}
                         sort={sortState}
                         pagination={{
-                            pageSize: limit,
+                            pageSize: validatedLimit,
                             pageIndex: page,
                         }}
                     />
