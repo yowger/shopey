@@ -20,7 +20,11 @@ import {
     TableRow,
 } from "@/components/ui/table"
 
-import type { ColumnDef, SortingState } from "@tanstack/react-table"
+import type {
+    ColumnDef,
+    ColumnFiltersState,
+    SortingState,
+} from "@tanstack/react-table"
 
 interface Pagination {
     pageIndex: number
@@ -30,6 +34,7 @@ interface Pagination {
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[]
+    filter: ColumnFiltersState
     rowCount: number
     pagination: Pagination
     sort: SortingState
@@ -38,23 +43,27 @@ interface DataTableProps<TData, TValue> {
 export function ProductDataTable<TData, TValue>(
     props: DataTableProps<TData, TValue>
 ) {
-    const { columns, data, rowCount, sort, pagination } = props
+    const { columns, data, filter, rowCount, pagination, sort } = props
+
+    const [rowSelection, setRowSelection] = useState({})
+    const [columnFilters, setColumnFilters] =
+        useState<ColumnFiltersState>(filter)
+    const [sorting, setSorting] = useState<SortingState>(sort)
 
     const pathname = usePathname()
     const { replace } = useRouter()
     const searchParams = useSearchParams()
     const params = new URLSearchParams(searchParams)
 
-    const [rowSelection, setRowSelection] = useState({})
-    const [sorting, setSorting] = useState<SortingState>(sort)
-
     const table = useReactTable({
         data,
         columns,
         rowCount: rowCount,
+        manualFiltering: true,
         manualSorting: true,
         manualPagination: true,
         state: {
+            columnFilters,
             pagination: {
                 pageIndex: pagination.pageIndex - 1,
                 pageSize: pagination.pageSize,
@@ -62,6 +71,27 @@ export function ProductDataTable<TData, TValue>(
             sorting,
         },
         getCoreRowModel: getCoreRowModel(),
+        onColumnFiltersChange: (updater) => {
+            if (typeof updater !== "function") return
+
+            const newColumnFiltersState = updater(
+                table.getState().columnFilters
+            )
+
+            if (newColumnFiltersState.length === 0) return
+
+            setColumnFilters(newColumnFiltersState)
+
+            // todo make funciton for dis
+            const filterParams = newColumnFiltersState
+                .map((filter) => `${filter.id}:${filter.value}`)
+                .join(",")
+
+            params.set("s", filterParams)
+
+            const href = `${pathname}?${params.toString()}`
+            replace(href)
+        },
         onPaginationChange: (updater) => {
             if (typeof updater !== "function") return
 
@@ -81,9 +111,7 @@ export function ProductDataTable<TData, TValue>(
 
             const newSortingState = updater(table.getState().sorting)
 
-            if (newSortingState.length === 0) {
-                return
-            }
+            if (newSortingState.length === 0) return
 
             setSorting(newSortingState)
 

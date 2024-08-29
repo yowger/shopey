@@ -21,13 +21,13 @@ import {
 } from "@/components/ui/card"
 
 import type { OrderBy } from "@/server/types/table"
-import type { SortingState } from "@tanstack/react-table"
+import type { ColumnFiltersState, SortingState } from "@tanstack/react-table"
 
 interface ProductProps {
     searchParams?: {
-        query?: string
         page?: number
         limit?: number
+        s: string
         sort?: string
         orderBy?: OrderBy
     }
@@ -37,16 +37,22 @@ export default async function Product(props: ProductProps) {
     const { searchParams } = props
 
     const {
-        query = "",
         page = 1,
         limit = 10,
+        s = "",
         sort = "",
         orderBy = "desc",
     } = searchParams || {}
 
-    const validatedLimit = validatePageSize(Number(limit), PAGE_SIZES)
+    const filterState = s.split(",").map((filterStr) => {
+        const [id, value] = filterStr.split(":")
+
+        return { id, value: value.trim() }
+    }) satisfies ColumnFiltersState
+
     const sortState = createSortState(sort, orderBy)
     const sortParams = createSortParams(sort, orderBy)
+    const validatedLimit = validatePageSize(Number(limit), PAGE_SIZES)
 
     const { products, total } = await getProductsWithPagination({
         pagination: {
@@ -69,6 +75,7 @@ export default async function Product(props: ProductProps) {
                     <ProductDataTable
                         columns={columns}
                         data={products}
+                        filter={filterState}
                         rowCount={total}
                         sort={sortState}
                         pagination={{

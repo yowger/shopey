@@ -1,36 +1,45 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
+# Shopey
+Shopey is a small e-commerce platform designed for both customers and administrators. Customers can browse, filter, and purchase products, while administrators have full control over product management, user management, and more. 
 
-First, run the development server:
+## Tech Stack
+I used next js for its SEO feature and more, ts for type safety, next auth for authentication, resend to handle email, stripe for payment and tanstack table cause its headles, works well with tailwind and has awesome documentation. Data fetching are all done in serverside, Mutations are done in server actions with next safe action.
+  
+- Typescript
+- Next 14
+- Next Auth
+- Shadcn-ui
+- Resend
+- Tanstack table
+- Stripe
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+  
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Features
+-  **Authentication**
+- [x] Email Login
+- [x] Social Login (Github, Google) [Partial Done]
+- [x] Register
+- [ ] Authorization (roles, pages, server actions) [Partial Done]
+- [ ] Token type Reset Password
+- [ ] OTP email verification
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+-  **Product Management**
+- [x] Add product
+- [x] View product
+- [x] Filter product
+- [ ] Edit user
+- [ ] Delete user
+-  **Cart & Shopping**
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+- [ ] View products
+- [ ] Filter products
+- [ ] Add to cart
+- [ ] View cart
+- [ ] Edit cart
+- [ ] Checkout
 
-## Learn More
+-  **Logging**
+- [x] Api logging, Error logging
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+-  **Statisctic**
