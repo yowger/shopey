@@ -37,8 +37,8 @@ interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[]
     filter?: ColumnFiltersState
-    rowCount: number
     pagination: Pagination
+    rowCount: number
     sort?: SortingState
 }
 
@@ -66,7 +66,7 @@ export function ProductDataTable<TData, TValue>(
     const table = useReactTable({
         data,
         columns,
-        rowCount: rowCount,
+        rowCount,
         manualFiltering: true,
         manualSorting: true,
         manualPagination: true,
@@ -125,7 +125,7 @@ export function ProductDataTable<TData, TValue>(
 
         const { id, desc } = newSortingState[0]
         const orderBy = desc ? "desc" : "asc"
-        
+
         params.set("sort", id)
         params.set("orderBy", orderBy)
         const href = createHref(pathname, params)

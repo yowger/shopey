@@ -52,7 +52,7 @@ export default async function Product(props: ProductProps) {
     const sortParams = sort ? createSortParams(sort, orderBy) : undefined
     const PageLimit = validatePageSize(Number(limit), PAGE_SIZES)
 
-    const { products, total } = await getProductsWithPagination({
+    const { products, total: totalProducts } = await getProductsWithPagination({
         filters: filterParams,
         sort: sortParams,
         pagination: {
@@ -60,6 +60,7 @@ export default async function Product(props: ProductProps) {
             limit: PageLimit,
         },
     })
+    console.log("🚀 ~ Product ~ totalProducts:", totalProducts)
 
     const suspenseKey = JSON.stringify({ ...searchParams })
 
@@ -75,7 +76,7 @@ export default async function Product(props: ProductProps) {
                         columns={columns}
                         data={products}
                         filter={filterState}
-                        rowCount={total}
+                        rowCount={totalProducts}
                         sort={sortState}
                         pagination={{
                             pageSize: PageLimit,
