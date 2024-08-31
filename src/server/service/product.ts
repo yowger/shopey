@@ -1,4 +1,4 @@
-import { asc, count, desc } from "drizzle-orm"
+import { and, asc, count, desc, ilike } from "drizzle-orm"
 
 import { db } from "../db"
 
@@ -10,10 +10,15 @@ import type { Product } from "../types/product"
 export type PartialProduct = Omit<Product, "description">
 export type ProductKeys = keyof PartialProduct
 export type ProductSortColumns = Sort<ProductKeys>
+export type ProductFilter = {
+    column: ProductKeys
+    value: string
+}
 
 interface GetProductsWithPagination {
+    filters?: ProductFilter[]
+    sort?: ProductSortColumns
     pagination: Pagination
-    sort?: ProductSortColumns | undefined
 }
 
 export function isProductKey(key: string): key is ProductKeys {
@@ -24,13 +29,14 @@ export function isProductKey(key: string): key is ProductKeys {
 export async function getProductsWithPagination(
     params: GetProductsWithPagination
 ) {
-    const { pagination, sort } = params
+    const { filters, pagination, sort } = params
     const { page = 1, limit = 10 } = pagination
 
     const offset = (page - 1) * limit
     const totalProductsQuery = db
         .select({ count: count() })
         .from(productsSchema)
+        .$dynamic()
 
     let productQuery = db
         .select()
@@ -38,6 +44,20 @@ export async function getProductsWithPagination(
         .offset(offset)
         .limit(limit)
         .$dynamic()
+
+    if (filters) {
+        const filterConditions = filters.map((filterItem) => {
+            // todo refactor if number
+            return ilike(
+                productsSchema[filterItem.column],
+                `%${filterItem.value}%`
+            )
+        })
+
+        if (filterConditions.length > 0) {
+            productQuery = productQuery.where(and(...filterConditions))
+        }
+    }
 
     if (sort) {
         const sortByClause =

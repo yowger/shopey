@@ -38,6 +38,7 @@
         "drizzle-orm": "^0.32.1",
         "input-otp": "^1.2.4",
         "jiti": "^1.21.6",
+        "lodash.debounce": "^4.0.8",
         "lucide-react": "^0.417.0",
         "next": "14.2.5",
         "next-auth": "^5.0.0-beta.16",
@@ -60,6 +61,7 @@
     "devDependencies": {
         "@tailwindcss/typography": "^0.5.14",
         "@types/bcrypt": "^5.0.2",
+        "@types/lodash.debounce": "^4.0.9",
         "@types/node": "^20.14.13",
         "@types/react": "^18.3.3",
         "@types/react-dom": "^18.3.0",

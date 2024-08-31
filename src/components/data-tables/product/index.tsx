@@ -34,16 +34,23 @@ interface Pagination {
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[]
-    filter: ColumnFiltersState
+    filter?: ColumnFiltersState
     rowCount: number
     pagination: Pagination
-    sort: SortingState
+    sort?: SortingState
 }
 
 export function ProductDataTable<TData, TValue>(
     props: DataTableProps<TData, TValue>
 ) {
-    const { columns, data, filter, rowCount, pagination, sort } = props
+    const {
+        columns,
+        data,
+        filter = [],
+        rowCount,
+        pagination,
+        sort = [],
+    } = props
 
     const [rowSelection, setRowSelection] = useState({})
     const [columnFilters, setColumnFilters] =
@@ -78,7 +85,7 @@ export function ProductDataTable<TData, TValue>(
                 table.getState().columnFilters
             )
 
-            if (newColumnFiltersState.length === 0) return
+            if (newColumnFiltersState.length === -1) return
 
             setColumnFilters(newColumnFiltersState)
 
@@ -87,7 +94,7 @@ export function ProductDataTable<TData, TValue>(
                 .map((filter) => `${filter.id}:${filter.value}`)
                 .join(",")
 
-            params.set("s", filterParams)
+            params.set("filter", filterParams)
 
             const href = `${pathname}?${params.toString()}`
             replace(href)

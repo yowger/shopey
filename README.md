@@ -13,8 +13,6 @@ I used next js for its SEO feature and more, ts for type safety, next auth for a
 - Tanstack table
 - Stripe
 
-  
-
 ## Features
 -  **Authentication**
 - [x] Email Login

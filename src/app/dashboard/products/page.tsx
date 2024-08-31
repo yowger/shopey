@@ -3,6 +3,7 @@ import { Suspense } from "react"
 import {
     getProductsWithPagination,
     isProductKey,
+    ProductFilter,
     ProductSortColumns,
 } from "@/server/service/product"
 
@@ -27,7 +28,7 @@ interface ProductProps {
     searchParams?: {
         page?: number
         limit?: number
-        s: string
+        filter?: string
         sort?: string
         orderBy?: OrderBy
     }
@@ -35,31 +36,29 @@ interface ProductProps {
 
 export default async function Product(props: ProductProps) {
     const { searchParams } = props
-
     const {
         page = 1,
         limit = 10,
-        s = "",
-        sort = "",
+        filter,
+        sort,
         orderBy = "desc",
     } = searchParams || {}
 
-    const filterState = s.split(",").map((filterStr) => {
-        const [id, value] = filterStr.split(":")
-
-        return { id, value: value.trim() }
-    }) satisfies ColumnFiltersState
-
-    const sortState = createSortState(sort, orderBy)
-    const sortParams = createSortParams(sort, orderBy)
-    const validatedLimit = validatePageSize(Number(limit), PAGE_SIZES)
+    const filterState = filter ? parseFilterState(filter) : undefined
+    const filterParams = filterState
+        ? crateFilterParams(filterState)
+        : undefined
+    const sortState = sort ? createSortState(sort, orderBy) : undefined
+    const sortParams = sort ? createSortParams(sort, orderBy) : undefined
+    const PageLimit = validatePageSize(Number(limit), PAGE_SIZES)
 
     const { products, total } = await getProductsWithPagination({
+        filters: filterParams,
+        sort: sortParams,
         pagination: {
             page,
-            limit: validatedLimit,
+            limit: PageLimit,
         },
-        sort: sortParams,
     })
 
     const suspenseKey = searchParams?.toString()
@@ -79,7 +78,7 @@ export default async function Product(props: ProductProps) {
                         rowCount={total}
                         sort={sortState}
                         pagination={{
-                            pageSize: validatedLimit,
+                            pageSize: PageLimit,
                             pageIndex: page,
                         }}
                     />
@@ -89,9 +88,33 @@ export default async function Product(props: ProductProps) {
     )
 }
 
-function createSortState(sort: string, orderBy: OrderBy): SortingState {
-    if (!sort) return []
+function parseFilterState(filter: string): ColumnFiltersState {
+    return filter.split(",").map((filterStr) => {
+        const [id, value] = filterStr.split(":")
 
+        return { id, value }
+    })
+}
+
+function crateFilterParams(filterState: ColumnFiltersState): ProductFilter[] {
+    return filterState
+        .map((filterItem) => {
+            if (isProductKey(filterItem.id)) {
+                const column = filterItem.id
+                const value = filterItem.value as string
+
+                return {
+                    column,
+                    value,
+                }
+            }
+
+            return null
+        })
+        .filter((filterItem) => filterItem !== null)
+}
+
+function createSortState(sort: string, orderBy: OrderBy): SortingState {
     return [
         {
             id: sort,
