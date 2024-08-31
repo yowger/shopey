@@ -23,7 +23,9 @@ import {
 import type {
     ColumnDef,
     ColumnFiltersState,
+    PaginationState,
     SortingState,
+    Updater,
 } from "@tanstack/react-table"
 
 interface Pagination {
@@ -52,11 +54,10 @@ export function ProductDataTable<TData, TValue>(
         sort = [],
     } = props
 
-    const [rowSelection, setRowSelection] = useState({})
+    // const [rowSelection, setRowSelection] = useState({})
     const [columnFilters, setColumnFilters] =
         useState<ColumnFiltersState>(filter)
     const [sorting, setSorting] = useState<SortingState>(sort)
-
     const pathname = usePathname()
     const { replace } = useRouter()
     const searchParams = useSearchParams()
@@ -78,59 +79,62 @@ export function ProductDataTable<TData, TValue>(
             sorting,
         },
         getCoreRowModel: getCoreRowModel(),
-        onColumnFiltersChange: (updater) => {
-            if (typeof updater !== "function") return
-
-            const newColumnFiltersState = updater(
-                table.getState().columnFilters
-            )
-
-            if (newColumnFiltersState.length === -1) return
-
-            setColumnFilters(newColumnFiltersState)
-
-            // todo make funciton for dis
-            const filterParams = newColumnFiltersState
-                .map((filter) => `${filter.id}:${filter.value}`)
-                .join(",")
-
-            params.set("filter", filterParams)
-
-            const href = `${pathname}?${params.toString()}`
-            replace(href)
-        },
-        onPaginationChange: (updater) => {
-            if (typeof updater !== "function") return
-
-            const newPageState = updater(table.getState().pagination)
-
-            const page = newPageState.pageIndex + 1
-            const pageSize = newPageState.pageSize
-
-            params.set("page", String(page))
-            params.set("limit", String(pageSize))
-
-            const href = `${pathname}?${params.toString()}`
-            replace(href)
-        },
-        onSortingChange: (updater) => {
-            if (typeof updater !== "function") return
-
-            const newSortingState = updater(table.getState().sorting)
-
-            if (newSortingState.length === 0) return
-
-            setSorting(newSortingState)
-
-            const { id, desc } = newSortingState[0]
-            const orderBy = desc ? "desc" : "asc"
-            params.set("sort", id)
-            params.set("orderBy", orderBy)
-
-            const href = `${pathname}?${params.toString()}`
-            replace(href)
-        },
+        onColumnFiltersChange: handleFiltersChange,
+        onPaginationChange: handlePaginationChange,
+        onSortingChange: handleSortingChange,
     })
+
+    function handleFiltersChange(updater: Updater<ColumnFiltersState>) {
+        if (typeof updater !== "function") return
+
+        const oldColumnFiltersState = table.getState().columnFilters
+        const newColumnFiltersState = updater(oldColumnFiltersState)
+
+        setColumnFilters(newColumnFiltersState)
+        const filterParams = newColumnFiltersState
+            .map((filter) => `${filter.id}:${filter.value}`)
+            .join(",")
+
+        params.set("filter", filterParams)
+        const href = createHref(pathname, params)
+        replace(href)
+    }
+
+    function handlePaginationChange(updater: Updater<PaginationState>) {
+        if (typeof updater !== "function") return
+
+        const oldPageState = table.getState().pagination
+        const newPageState = updater(oldPageState)
+
+        const page = newPageState.pageIndex + 1
+        const pageSize = newPageState.pageSize
+
+        params.set("page", String(page))
+        params.set("limit", String(pageSize))
+        const href = createHref(pathname, params)
+        replace(href)
+    }
+
+    function handleSortingChange(updater: Updater<SortingState>) {
+        if (typeof updater !== "function") return
+
+        const oldSortingState = table.getState().sorting
+        const newSortingState = updater(oldSortingState)
+
+        setSorting(newSortingState)
+
+        const { id, desc } = newSortingState[0]
+        const orderBy = desc ? "desc" : "asc"
+        
+        params.set("sort", id)
+        params.set("orderBy", orderBy)
+        const href = createHref(pathname, params)
+        replace(href)
+    }
+
+    function createHref(pathname: string, params: URLSearchParams): string {
+        return `${pathname}?${params.toString()}`
+    }
 
     return (
         <div className="space-y-4">

@@ -33,7 +33,7 @@ export async function getProductsWithPagination(
     const { page = 1, limit = 10 } = pagination
 
     const offset = (page - 1) * limit
-    const totalProductsQuery = db
+    let totalProductsQuery = db
         .select({ count: count() })
         .from(productsSchema)
         .$dynamic()
@@ -47,7 +47,6 @@ export async function getProductsWithPagination(
 
     if (filters) {
         const filterConditions = filters.map((filterItem) => {
-            // todo refactor if number
             return ilike(
                 productsSchema[filterItem.column],
                 `%${filterItem.value}%`
@@ -56,6 +55,10 @@ export async function getProductsWithPagination(
 
         if (filterConditions.length > 0) {
             productQuery = productQuery.where(and(...filterConditions))
+
+            totalProductsQuery = totalProductsQuery.where(
+                and(...filterConditions)
+            )
         }
     }
 

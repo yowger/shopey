@@ -25,7 +25,7 @@ import type { OrderBy } from "@/server/types/table"
 import type { ColumnFiltersState, SortingState } from "@tanstack/react-table"
 
 interface ProductProps {
-    searchParams?: {
+    searchParams: {
         page?: number
         limit?: number
         filter?: string
@@ -61,7 +61,7 @@ export default async function Product(props: ProductProps) {
         },
     })
 
-    const suspenseKey = searchParams?.toString()
+    const suspenseKey = JSON.stringify({ ...searchParams })
 
     return (
         <Card>

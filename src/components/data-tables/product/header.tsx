@@ -27,6 +27,7 @@ export function DataTableToolbar<TData>({
                             .getColumn("title")
                             ?.setFilterValue(event.target.value)
                     }
+                    autoFocus={true}
                     className="h-8 w-full lg:w-[300px]"
                 />
             </div>
