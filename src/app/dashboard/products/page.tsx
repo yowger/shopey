@@ -60,7 +60,6 @@ export default async function Product(props: ProductProps) {
             limit: PageLimit,
         },
     })
-    console.log("🚀 ~ Product ~ totalProducts:", totalProducts)
 
     const suspenseKey = JSON.stringify({ ...searchParams })
 

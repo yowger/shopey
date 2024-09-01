@@ -30,7 +30,6 @@ export function useDebounceValue<T>(
         options
     )
 
-    // Update the debounced value if the initial value changes
     if (!eq(previousValueRef.current as T, unwrappedInitialValue)) {
         updateDebouncedValue(unwrappedInitialValue)
         previousValueRef.current = unwrappedInitialValue

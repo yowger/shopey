@@ -9,6 +9,8 @@ import {
     useReactTable,
 } from "@tanstack/react-table"
 
+import { createHref } from "@/utils/url"
+
 import { DataTablePagination } from "../pagination"
 import { DataTableToolbar } from "./header"
 import {
@@ -58,8 +60,9 @@ export function ProductDataTable<TData, TValue>(
     const [columnFilters, setColumnFilters] =
         useState<ColumnFiltersState>(filter)
     const [sorting, setSorting] = useState<SortingState>(sort)
+
     const pathname = usePathname()
-    const { replace } = useRouter()
+    const router = useRouter()
     const searchParams = useSearchParams()
     const params = new URLSearchParams(searchParams)
 
@@ -79,26 +82,10 @@ export function ProductDataTable<TData, TValue>(
             sorting,
         },
         getCoreRowModel: getCoreRowModel(),
-        onColumnFiltersChange: handleFiltersChange,
+        onColumnFiltersChange: setColumnFilters,
         onPaginationChange: handlePaginationChange,
         onSortingChange: handleSortingChange,
     })
-
-    function handleFiltersChange(updater: Updater<ColumnFiltersState>) {
-        if (typeof updater !== "function") return
-
-        const oldColumnFiltersState = table.getState().columnFilters
-        const newColumnFiltersState = updater(oldColumnFiltersState)
-
-        setColumnFilters(newColumnFiltersState)
-        const filterParams = newColumnFiltersState
-            .map((filter) => `${filter.id}:${filter.value}`)
-            .join(",")
-
-        params.set("filter", filterParams)
-        const href = createHref(pathname, params)
-        replace(href)
-    }
 
     function handlePaginationChange(updater: Updater<PaginationState>) {
         if (typeof updater !== "function") return
@@ -112,7 +99,7 @@ export function ProductDataTable<TData, TValue>(
         params.set("page", String(page))
         params.set("limit", String(pageSize))
         const href = createHref(pathname, params)
-        replace(href)
+        router.replace(href)
     }
 
     function handleSortingChange(updater: Updater<SortingState>) {
@@ -129,11 +116,7 @@ export function ProductDataTable<TData, TValue>(
         params.set("sort", id)
         params.set("orderBy", orderBy)
         const href = createHref(pathname, params)
-        replace(href)
-    }
-
-    function createHref(pathname: string, params: URLSearchParams): string {
-        return `${pathname}?${params.toString()}`
+        router.replace(href)
     }
 
     return (
