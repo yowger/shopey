@@ -61,11 +61,12 @@ export const columns: ColumnDef<Product>[] = [
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Created" />
         ),
-        accessorFn: (row) => {
-            const { created } = row
+        cell: ({ row }) => {
+            const created = row.original.created
+
             const formattedDate = format(
                 new Date(created),
-                "yyyy-MM-dd hh:mm a"
+                "MMM d, yyyy - hh:mm a"
             )
 
             return formattedDate
@@ -76,11 +77,12 @@ export const columns: ColumnDef<Product>[] = [
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Updated" />
         ),
-        accessorFn: (row) => {
-            const { updated } = row
+        cell: ({ row }) => {
+            const updated = row.original.created
+
             const formattedDate = format(
                 new Date(updated),
-                "yyyy-MM-dd hh:mm a"
+                "MMM d, yyyy - hh:mm a"
             )
 
             return formattedDate
