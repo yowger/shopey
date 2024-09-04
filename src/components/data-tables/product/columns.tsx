@@ -1,6 +1,8 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
+import { format } from "date-fns"
+import Link from "next/link"
 import { MoreHorizontal } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -59,6 +61,30 @@ export const columns: ColumnDef<Product>[] = [
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Created" />
         ),
+        accessorFn: (row) => {
+            const { created } = row
+            const formattedDate = format(
+                new Date(created),
+                "yyyy-MM-dd hh:mm a"
+            )
+
+            return formattedDate
+        },
+    },
+    {
+        accessorKey: "updated",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Updated" />
+        ),
+        accessorFn: (row) => {
+            const { updated } = row
+            const formattedDate = format(
+                new Date(updated),
+                "yyyy-MM-dd hh:mm a"
+            )
+
+            return formattedDate
+        },
     },
     {
         id: "actions",
@@ -75,12 +101,12 @@ export const columns: ColumnDef<Product>[] = [
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem
-                            onClick={() =>
-                                navigator.clipboard.writeText(product.title)
-                            }
-                        >
-                            Copy payment ID
+                        <DropdownMenuItem>
+                            <Link
+                                href={`/dashboard/products/edit?id=${product.id}`}
+                            >
+                                Edit Product
+                            </Link>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem>View customer</DropdownMenuItem>

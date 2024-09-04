@@ -1,8 +1,11 @@
-import { and, asc, count, desc, ilike } from "drizzle-orm"
+import { and, asc, count, desc, eq, ilike } from "drizzle-orm"
+import { unstable_cache } from "next/cache"
 
 import { db } from "../db"
 
 import { productsSchema } from "../schema/product"
+
+import { PRODUCT_CACHE_KEY } from "@/constants/keys/cache"
 
 import type { Pagination, Sort } from "../types/table"
 import type { Product } from "../types/product"
@@ -26,81 +29,102 @@ export function isProductKey(key: string): key is ProductKeys {
     return ["id", "title", "created", "price"].includes(key)
 }
 
-export async function getProductsWithPagination(
-    params: GetProductsWithPagination
-) {
-    const { filters, pagination, sort } = params
-    const { page = 1, limit = 10 } = pagination
+export const getProductsWithPagination = unstable_cache(
+    async (params: GetProductsWithPagination) => {
+        const { filters, pagination, sort } = params
+        const { page = 1, limit = 10 } = pagination
 
-    const offset = (page - 1) * limit
-    let totalProductsQuery = db
-        .select({ count: count() })
-        .from(productsSchema)
-        .$dynamic()
+        const offset = (page - 1) * limit
+        let totalProductsQuery = db
+            .select({ count: count() })
+            .from(productsSchema)
+            .$dynamic()
 
-    let productQuery = db
-        .select()
-        .from(productsSchema)
-        .offset(offset)
-        .limit(limit)
-        .$dynamic()
+        let productQuery = db
+            .select()
+            .from(productsSchema)
+            .offset(offset)
+            .limit(limit)
+            .$dynamic()
 
-    if (filters) {
-        const filterConditions = filters.map((filterItem) => {
-            return ilike(
-                productsSchema[filterItem.column],
-                `%${filterItem.value}%`
+        if (filters) {
+            const filterConditions = filters.map((filterItem) =>
+                ilike(
+                    productsSchema[filterItem.column],
+                    `%${filterItem.value}%`
+                )
             )
-        })
 
-        if (filterConditions.length > 0) {
-            productQuery = productQuery.where(and(...filterConditions))
-
-            totalProductsQuery = totalProductsQuery.where(
-                and(...filterConditions)
-            )
+            if (filterConditions.length > 0) {
+                productQuery = productQuery.where(and(...filterConditions))
+                totalProductsQuery = totalProductsQuery.where(
+                    and(...filterConditions)
+                )
+            }
         }
-    }
 
-    if (sort) {
-        const sortByClause =
-            sort.order === "desc"
-                ? desc(productsSchema[sort.column])
-                : asc(productsSchema[sort.column])
+        if (sort) {
+            const sortByClause =
+                sort.order === "desc"
+                    ? desc(productsSchema[sort.column])
+                    : asc(productsSchema[sort.column])
 
-        productQuery = productQuery.orderBy(sortByClause)
-    }
+            productQuery = productQuery.orderBy(sortByClause)
+        }
 
-    const [products, totalProducts] = await Promise.all([
-        productQuery,
-        totalProductsQuery,
-    ])
+        const [products, totalProducts] = await Promise.all([
+            productQuery,
+            totalProductsQuery,
+        ])
 
-    const total = totalProducts[0].count ?? 0
+        const total = totalProducts[0].count ?? 0
 
-    return {
-        products,
-        total,
-        page,
-        limit,
-    }
-}
+        return {
+            products,
+            total,
+            page,
+            limit,
+        }
+    },
+    [PRODUCT_CACHE_KEY],
+    { revalidate: 60, tags: [PRODUCT_CACHE_KEY] }
+)
 
-export type ProductInput = Omit<Product, "id" | "created">
+export const getProductById = unstable_cache(
+    async (productId: number): Promise<Product | null> => {
+        const [product] = await db
+            .select()
+            .from(productsSchema)
+            .where(eq(productsSchema.id, productId))
 
-export async function createProduct(
+        return product || null
+    },
+    [PRODUCT_CACHE_KEY],
+    { revalidate: 60, tags: [PRODUCT_CACHE_KEY] }
+)
+
+export type ProductInput = Omit<Product, "id" | "created" | "updated">
+
+export const createProduct = async (
     productInput: ProductInput
-): Promise<Product> {
-    const { title, description, price } = productInput
-
+): Promise<number> => {
     const [createdProduct] = await db
         .insert(productsSchema)
-        .values({
-            title,
-            description,
-            price,
-        })
-        .returning()
+        .values(productInput)
+        .returning({ createdId: productsSchema.id })
 
-    return createdProduct
+    return createdProduct.createdId
+}
+
+export const updateProduct = async (
+    productId: number,
+    productInput: ProductInput
+): Promise<number> => {
+    const [updatedProduct] = await db
+        .update(productsSchema)
+        .set(productInput)
+        .where(eq(productsSchema.id, productId))
+        .returning({ updatedId: productsSchema.id })
+
+    return updatedProduct.updatedId
 }

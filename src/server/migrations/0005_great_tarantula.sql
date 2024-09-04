@@ -1,0 +1,1 @@
+ALTER TABLE "products" ADD COLUMN "updated" timestamp DEFAULT now();

@@ -15,8 +15,10 @@ export default function page() {
         <div className="flex justify-center">
             <Card className="w-full md:w-2/3 lg:w-1/2">
                 <CardHeader>
-                    <CardTitle>Log in to your account</CardTitle>
-                    <CardDescription>
+                    <CardTitle className="text-center">
+                        Log in to your account
+                    </CardTitle>
+                    <CardDescription className="text-center">
                         Welcome back! Select method to log in
                     </CardDescription>
                 </CardHeader>

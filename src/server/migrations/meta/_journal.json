@@ -36,6 +36,20 @@
       "when": 1724660923587,
       "tag": "0004_foamy_iron_fist",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1725449468019,
+      "tag": "0005_great_tarantula",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1725450748730,
+      "tag": "0006_neat_arachne",
+      "breakpoints": true
     }
   ]
 }

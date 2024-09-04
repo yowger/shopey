@@ -4,6 +4,10 @@ export const productsSchema = pgTable("products", {
     id: serial("id").primaryKey(),
     description: text("description").notNull(),
     title: text("title").notNull(),
-    created: timestamp("created").defaultNow(),
+    created: timestamp("created").notNull().defaultNow(),
+    updated: timestamp("updated")
+        .notNull()
+        .defaultNow()
+        .$onUpdate(() => new Date()),
     price: real("price").notNull(),
 })

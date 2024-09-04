@@ -14,10 +14,11 @@ export const ProductSchema = z.object({
 
 export const CreateProductSchema = ProductSchema
 
-export const EditProductSchema = ProductSchema.extend({
+export const UpdateProductSchema = ProductSchema.extend({
     id: z.number({
         required_error: "ID is required for editing",
     }),
 })
 
-export type ProductInput = z.infer<typeof ProductSchema>
+export type CreateProductInput = z.infer<typeof CreateProductSchema>
+export type UpdateProductInput = z.infer<typeof UpdateProductSchema>

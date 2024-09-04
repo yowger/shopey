@@ -2,13 +2,14 @@
 
 import { useAction } from "next-safe-action/hooks"
 import { useForm } from "react-hook-form"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { PhilippinePeso } from "lucide-react"
 import { zodResolver } from "@hookform/resolvers/zod"
 
-import { CreateProductSchema } from "@/schemas/product/add"
+import { CreateProductSchema, UpdateProductSchema } from "@/schemas/product"
 
-import { addProduct } from "@/server/actions/products/add"
+import { createProductAction } from "@/server/actions/products/create"
+import { updateProductAction } from "@/server/actions/products/update"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -30,49 +31,76 @@ import { Input } from "@/components/ui/input"
 import RichTextEditor from "@/components/tiptap"
 import { useToast } from "@/components/ui/use-toast"
 
-import type { ProductInput } from "@/schemas/product/add"
+import type { Product } from "@/server/types/product"
+import type { CreateProductInput, UpdateProductInput } from "@/schemas/product"
 
-export default function ProductForm() {
+interface ProductFormProps {
+    product?: Product
+}
+
+export default function ProductForm(props: ProductFormProps) {
+    const { product } = props
+    const isEditMode = !!product
+    const initialValues = isEditMode ? product : {}
+    const productSchema = isEditMode ? UpdateProductSchema : CreateProductSchema
+    const productAction = isEditMode ? updateProductAction : createProductAction
+
     const router = useRouter()
     const { toast } = useToast()
 
-    const form = useForm<ProductInput>({
-        resolver: zodResolver(CreateProductSchema),
+    const form = useForm<CreateProductInput | UpdateProductInput>({
+        resolver: zodResolver(productSchema),
+        defaultValues: initialValues,
     })
     const { handleSubmit } = form
 
-    const { execute, isExecuting } = useAction(addProduct, {
-        onError: (args) => {
+    const { execute, isExecuting } = useAction(productAction, {
+        onError: () => {
+            const title = isEditMode
+                ? "Product update failed."
+                : "Product creation failed."
+            const description = isEditMode
+                ? "There was a problem updating the product."
+                : "There was a problem creating the product."
+
             toast({
                 variant: "destructive",
-                title: "Product creation failed.",
-                description: "There was a problem creating the product.",
+                title,
+                description,
             })
         },
-        onSuccess: (args) => {
-            const { data } = args
-
-            const successMessage =
-                data?.success || "Product created successfully."
+        onSuccess: (params) => {
+            const { data } = params
+            
+            const title = isEditMode ? "Product updated." : "Product created."
+            const successMessage = isEditMode
+                ? data?.success || "Product updated successfully."
+                : data?.success || "Product created successfully."
 
             router.push("/dashboard/products")
 
             toast({
-                title: "Product created.",
+                title,
                 description: successMessage,
             })
         },
     })
 
-    async function onSubmit(values: ProductInput) {
+    async function onSubmit(values: CreateProductInput | UpdateProductInput) {
         execute(values)
     }
 
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Create product</CardTitle>
-                <CardDescription>Enter product details</CardDescription>
+                <CardTitle>
+                    {isEditMode ? "Edit product" : "New product"}
+                </CardTitle>
+                <CardDescription>
+                    {isEditMode
+                        ? "Modify existing product"
+                        : "Enter product details"}
+                </CardDescription>
             </CardHeader>
             <CardContent>
                 <Form {...form}>
@@ -146,7 +174,7 @@ export default function ProductForm() {
                             disabled={isExecuting}
                             tabIndex={4}
                         >
-                            Create product
+                            {isEditMode ? "Update product" : "Create product"}
                         </Button>
                     </form>
                 </Form>
