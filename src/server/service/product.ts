@@ -33,43 +33,36 @@ export const getProductsWithPagination = unstable_cache(
     async (params: GetProductsWithPagination) => {
         const { filters, pagination, sort } = params
         const { page = 1, limit = 10 } = pagination
-
         const offset = (page - 1) * limit
+
+        const defaultSortClause = desc(productsSchema.created)
+
+        const filterConditions = filters ? buildFilterClause(filters) : []
+        const sortByClause = sort ? buildSortClause(sort) : defaultSortClause
+
         let totalProductsQuery = db
             .select({ count: count() })
             .from(productsSchema)
             .$dynamic()
 
         let productQuery = db
-            .select()
+            .select({
+                id: productsSchema.id,
+                title: productsSchema.title,
+                created: productsSchema.created,
+                updated: productsSchema.updated,
+            })
             .from(productsSchema)
+            .orderBy(sortByClause)
             .offset(offset)
             .limit(limit)
             .$dynamic()
 
-        if (filters) {
-            const filterConditions = filters.map((filterItem) =>
-                ilike(
-                    productsSchema[filterItem.column],
-                    `%${filterItem.value}%`
-                )
+        if (filterConditions.length > 0) {
+            productQuery = productQuery.where(and(...filterConditions))
+            totalProductsQuery = totalProductsQuery.where(
+                and(...filterConditions)
             )
-
-            if (filterConditions.length > 0) {
-                productQuery = productQuery.where(and(...filterConditions))
-                totalProductsQuery = totalProductsQuery.where(
-                    and(...filterConditions)
-                )
-            }
-        }
-
-        if (sort) {
-            const sortByClause =
-                sort.order === "desc"
-                    ? desc(productsSchema[sort.column])
-                    : asc(productsSchema[sort.column])
-
-            productQuery = productQuery.orderBy(sortByClause)
         }
 
         const [products, totalProducts] = await Promise.all([
@@ -89,6 +82,18 @@ export const getProductsWithPagination = unstable_cache(
     [PRODUCT_CACHE_KEY],
     { revalidate: 60, tags: [PRODUCT_CACHE_KEY] }
 )
+
+const buildFilterClause = (filters: ProductFilter[]) => {
+    return filters.map((filter) =>
+        ilike(productsSchema[filter.column], `%${filter.value}%`)
+    )
+}
+
+const buildSortClause = (sort: ProductSortColumns) => {
+    return sort.order === "desc"
+        ? desc(productsSchema[sort.column])
+        : asc(productsSchema[sort.column])
+}
 
 export const getProductById = unstable_cache(
     async (productId: number): Promise<Product | null> => {
