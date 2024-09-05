@@ -8,7 +8,7 @@ import {
 } from "lucide-react"
 import { Table } from "@tanstack/react-table"
 
-import { PAGE_SIZES } from "@/config/tables"
+import { PAGE_SIZES } from "@/config/app"
 
 import { Button } from "@/components/ui/button"
 import {

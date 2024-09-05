@@ -6,6 +6,7 @@ import { db } from "../db"
 import { productsSchema } from "../schema/product"
 
 import { PRODUCT_CACHE_KEY } from "@/constants/keys/cache"
+import { PRODUCT_CACHE_TIME } from "@/config/app"
 
 import type { Pagination, Sort } from "../types/table"
 import type { Product } from "../types/product"
@@ -80,7 +81,7 @@ export const getProductsWithPagination = unstable_cache(
         }
     },
     [PRODUCT_CACHE_KEY],
-    { revalidate: 60, tags: [PRODUCT_CACHE_KEY] }
+    { revalidate: PRODUCT_CACHE_TIME, tags: [PRODUCT_CACHE_KEY] }
 )
 
 const buildFilterClause = (filters: ProductFilter[]) => {
@@ -105,7 +106,7 @@ export const getProductById = unstable_cache(
         return product || null
     },
     [PRODUCT_CACHE_KEY],
-    { revalidate: 60, tags: [PRODUCT_CACHE_KEY] }
+    { revalidate: PRODUCT_CACHE_TIME, tags: [PRODUCT_CACHE_KEY] }
 )
 
 export type ProductInput = Omit<Product, "id" | "created" | "updated">

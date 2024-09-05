@@ -7,7 +7,7 @@ import {
     ProductSortColumns,
 } from "@/server/service/product"
 
-import { PAGE_SIZES } from "@/config/tables"
+import { PAGE_SIZES } from "@/config/app"
 
 import { validatePageSize } from "@/utils/table/index"
 
