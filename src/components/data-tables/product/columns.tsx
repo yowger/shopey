@@ -19,7 +19,8 @@ import {
 
 import type { Product } from "@/server/types/product"
 
-export const columns: ColumnDef<Product>[] = [
+// todo make global partial product
+export const columns: ColumnDef<Omit<Product, "description">>[] = [
     {
         id: "select",
         header: ({ table }) => (

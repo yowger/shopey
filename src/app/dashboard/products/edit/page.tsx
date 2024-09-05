@@ -1,6 +1,6 @@
 import ProductForm from "@/components/forms/product"
 
-import { getProductById } from "@/server/service/product"
+import { getCachedProductById } from "@/server/service/product"
 
 interface EditProductProps {
     searchParams: {
@@ -12,7 +12,7 @@ export default async function EditProduct(props: EditProductProps) {
     const { searchParams } = props
     const { id } = searchParams
 
-    const product = await getProductById(id)
+    const product = await getCachedProductById(id)
 
     if (!product) {
         return <p>Product not found</p>

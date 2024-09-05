@@ -1,7 +1,7 @@
 "use server"
 
 import { createId } from "@paralleldrive/cuid2"
-import { revalidateTag } from "next/cache"
+import { revalidatePath, revalidateTag } from "next/cache"
 
 import { actionClient } from "@/lib/safe-action/public"
 
@@ -22,7 +22,8 @@ export const updateProductAction = actionClient
         try {
             await updateProduct(id, restProductInput)
 
-            revalidateTag(PRODUCT_CACHE_KEY)
+            // revalidateTag(PRODUCT_CACHE_KEY)
+            revalidatePath("/dashboard/products")
 
             return {
                 success: `Product updated successfully.`,

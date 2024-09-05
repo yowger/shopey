@@ -1,7 +1,7 @@
 import { Suspense } from "react"
 
 import {
-    getProductsWithPagination,
+    getCachedProductsWithPagination,
     isProductKey,
     ProductFilter,
     ProductSortColumns,
@@ -52,14 +52,15 @@ export default async function Product(props: ProductProps) {
     const sortParams = sort ? createSortParams(sort, orderBy) : undefined
     const PageLimit = validatePageSize(Number(limit), PAGE_SIZES)
 
-    const { products, total: totalProducts } = await getProductsWithPagination({
-        filters: filterParams,
-        sort: sortParams,
-        pagination: {
-            page,
-            limit: PageLimit,
-        },
-    })
+    const { products, total: totalProducts } =
+        await getCachedProductsWithPagination({
+            filters: filterParams,
+            sort: sortParams,
+            pagination: {
+                page,
+                limit: PageLimit,
+            },
+        })
 
     const suspenseKey = JSON.stringify({ ...searchParams })
 

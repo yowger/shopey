@@ -30,59 +30,75 @@ export function isProductKey(key: string): key is ProductKeys {
     return ["id", "title", "created", "price"].includes(key)
 }
 
-export const getProductsWithPagination = unstable_cache(
-    async (params: GetProductsWithPagination) => {
-        const { filters, pagination, sort } = params
-        const { page = 1, limit = 10 } = pagination
-        const offset = (page - 1) * limit
+export const getProductsWithPagination = async (
+    params: GetProductsWithPagination
+) => {
+    const { filters, pagination, sort } = params
+    const { page = 1, limit = 10 } = pagination
+    const offset = (page - 1) * limit
 
-        const defaultSortClause = desc(productsSchema.created)
+    const defaultSortClause = desc(productsSchema.created)
 
-        const filterConditions = filters ? buildFilterClause(filters) : []
-        const sortByClause = sort ? buildSortClause(sort) : defaultSortClause
+    const filterConditions = filters ? buildFilterClause(filters) : []
+    const sortByClause = sort ? buildSortClause(sort) : defaultSortClause
 
-        let totalProductsQuery = db
-            .select({ count: count() })
-            .from(productsSchema)
-            .$dynamic()
+    let totalProductsQuery = db
+        .select({ count: count() })
+        .from(productsSchema)
+        .$dynamic()
 
-        let productQuery = db
-            .select({
-                id: productsSchema.id,
-                title: productsSchema.title,
-                created: productsSchema.created,
-                updated: productsSchema.updated,
-            })
-            .from(productsSchema)
-            .orderBy(sortByClause)
-            .offset(offset)
-            .limit(limit)
-            .$dynamic()
+    let productQuery = db
+        .select({
+            id: productsSchema.id,
+            title: productsSchema.title,
+            price: productsSchema.price,
+            created: productsSchema.created,
+            updated: productsSchema.updated,
+        })
+        .from(productsSchema)
+        .orderBy(sortByClause)
+        .offset(offset)
+        .limit(limit)
+        .$dynamic()
 
-        if (filterConditions.length > 0) {
-            productQuery = productQuery.where(and(...filterConditions))
-            totalProductsQuery = totalProductsQuery.where(
-                and(...filterConditions)
-            )
+    if (filterConditions.length > 0) {
+        productQuery = productQuery.where(and(...filterConditions))
+        totalProductsQuery = totalProductsQuery.where(and(...filterConditions))
+    }
+
+    const [products, totalProducts] = await Promise.all([
+        productQuery,
+        totalProductsQuery,
+    ])
+
+    const total = totalProducts[0].count ?? 0
+
+    return {
+        products,
+        total,
+        page,
+        limit,
+    }
+}
+
+export async function getCachedProductsWithPagination(
+    params: GetProductsWithPagination
+) {
+    const CACHED_KEY = `${PRODUCT_CACHE_KEY}:pagination:${JSON.stringify(
+        params
+    )}`
+
+    const getProducts = unstable_cache(
+        async (params) => await getProductsWithPagination(params),
+        [CACHED_KEY],
+        {
+            revalidate: PRODUCT_CACHE_TIME,
+            tags: [PRODUCT_CACHE_KEY],
         }
+    )
 
-        const [products, totalProducts] = await Promise.all([
-            productQuery,
-            totalProductsQuery,
-        ])
-
-        const total = totalProducts[0].count ?? 0
-
-        return {
-            products,
-            total,
-            page,
-            limit,
-        }
-    },
-    [PRODUCT_CACHE_KEY],
-    { revalidate: PRODUCT_CACHE_TIME, tags: [PRODUCT_CACHE_KEY] }
-)
+    return await getProducts(params)
+}
 
 const buildFilterClause = (filters: ProductFilter[]) => {
     return filters.map((filter) =>
@@ -96,18 +112,31 @@ const buildSortClause = (sort: ProductSortColumns) => {
         : asc(productsSchema[sort.column])
 }
 
-export const getProductById = unstable_cache(
-    async (productId: number): Promise<Product | null> => {
-        const [product] = await db
-            .select()
-            .from(productsSchema)
-            .where(eq(productsSchema.id, productId))
+export const getProductById = async (
+    productId: number
+): Promise<Product | null> => {
+    const [product] = await db
+        .select()
+        .from(productsSchema)
+        .where(eq(productsSchema.id, productId))
 
-        return product || null
-    },
-    [PRODUCT_CACHE_KEY],
-    { revalidate: PRODUCT_CACHE_TIME, tags: [PRODUCT_CACHE_KEY] }
-)
+    return product || null
+}
+
+export async function getCachedProductById(productId: number) {
+    const CACHED_KEY = `${PRODUCT_CACHE_KEY}:${productId}`
+
+    const getProduct = unstable_cache(
+        async (productId) => await getProductById(productId),
+        [CACHED_KEY],
+        {
+            revalidate: PRODUCT_CACHE_TIME,
+            tags: [PRODUCT_CACHE_KEY],
+        }
+    )
+
+    return await getProduct(productId)
+}
 
 export type ProductInput = Omit<Product, "id" | "created" | "updated">
 
