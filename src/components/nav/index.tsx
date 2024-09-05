@@ -4,13 +4,14 @@ import Link from "next/link"
 import { auth } from "@/server/auth"
 
 import { Button } from "@/components/ui/button"
-import Menu from "./menu"
+import Menu from "./user-nav"
 import {
     NavigationMenu,
     NavigationMenuList,
     NavigationMenuLink,
 } from "@/components/ui/navigation-menu"
 import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet"
+import { ThemeToggler } from "../common/theme-toggler"
 
 export default async function Nav() {
     const session = await auth()
@@ -74,8 +75,9 @@ export default async function Nav() {
                 </NavigationMenuList>
             </NavigationMenu>
 
-            <div className="ml-auto">
-                <Menu session={session} />
+            <div className="flex items-center gap-2 ml-auto">
+                <ThemeToggler />
+                {session && <Menu session={session} />}
             </div>
         </header>
     )

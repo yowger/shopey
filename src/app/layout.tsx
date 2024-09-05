@@ -2,6 +2,7 @@ import { Inter as FontSans } from "next/font/google"
 
 import { cn } from "@/lib/utils"
 
+import { ThemeProvider } from "@/components/providers/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
 
 import "./globals.css"
@@ -28,14 +29,21 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <html lang="en" suppressHydrationWarning>
             <head />
             <body className={cn("font-sans antialiased", fontSans.variable)}>
-                <div
-                    className={
-                        "flex-grow min-h-screen max-w-7xl mx-auto px-6 md:px-12"
-                    }
+                <ThemeProvider
+                    attribute="class"
+                    defaultTheme="system"
+                    enableSystem
+                    disableTransitionOnChange
                 >
-                    {children}
-                    <Toaster />
-                </div>
+                    <div
+                        className={
+                            "flex-grow min-h-screen max-w-7xl mx-auto px-6 md:px-12"
+                        }
+                    >
+                        {children}
+                        <Toaster />
+                    </div>
+                </ThemeProvider>
             </body>
         </html>
     )
