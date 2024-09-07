@@ -61,3 +61,12 @@ export const updateProduct = async (
 
     return updatedProduct.updatedId
 }
+
+export const deleteProductById = async (productId: number): Promise<number> => {
+    const [deletedProduct] = await db
+        .delete(productsSchema)
+        .where(eq(productsSchema.id, productId))
+        .returning({ deletedId: productsSchema.id })
+
+    return deletedProduct.deletedId
+}
