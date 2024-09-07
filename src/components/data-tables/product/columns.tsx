@@ -121,14 +121,14 @@ export const columns: ColumnDef<Omit<Product, "description">>[] = [
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem>
+                        <DropdownMenuItem className="p-0">
                             <Link
                                 prefetch={false}
                                 href={{
-                                    pathname: "product/edit",
+                                    pathname: "products/edit",
                                     query: { id: product.id },
                                 }}
-                                className="w-full"
+                                className="px-2 py-1.5 w-full"
                             >
                                 Edit
                             </Link>
