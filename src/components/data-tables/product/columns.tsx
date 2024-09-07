@@ -123,7 +123,11 @@ export const columns: ColumnDef<Omit<Product, "description">>[] = [
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuItem>
                             <Link
-                                href={`/dashboard/products/edit?id=${product.id}`}
+                                prefetch={false}
+                                href={{
+                                    pathname: "product/edit",
+                                    query: { id: product.id },
+                                }}
                                 className="w-full"
                             >
                                 Edit
@@ -131,6 +135,7 @@ export const columns: ColumnDef<Omit<Product, "description">>[] = [
                         </DropdownMenuItem>
                         <DropdownMenuItem
                             onClick={() => handleOpenAlertDialog()}
+                            className="cursor-pointer"
                         >
                             Delete
                         </DropdownMenuItem>

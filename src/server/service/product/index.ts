@@ -40,33 +40,47 @@ export type ProductInput = Omit<Product, "id" | "created" | "updated">
 
 export const createProduct = async (
     productInput: ProductInput
-): Promise<number> => {
+): Promise<{
+    id: number
+    title: string
+}> => {
     const [createdProduct] = await db
         .insert(productsSchema)
         .values(productInput)
-        .returning({ createdId: productsSchema.id })
+        .returning({
+            id: productsSchema.id,
+            title: productsSchema.title,
+        })
 
-    return createdProduct.createdId
+    return { id: createdProduct.id, title: createdProduct.title }
 }
 
 export const updateProduct = async (
     productId: number,
     productInput: ProductInput
-): Promise<number> => {
+): Promise<{
+    id: number
+    title: string
+}> => {
     const [updatedProduct] = await db
         .update(productsSchema)
         .set(productInput)
         .where(eq(productsSchema.id, productId))
-        .returning({ updatedId: productsSchema.id })
+        .returning({ id: productsSchema.id, title: productsSchema.title })
 
-    return updatedProduct.updatedId
+    return { id: updatedProduct.id, title: updatedProduct.title }
 }
 
-export const deleteProductById = async (productId: number): Promise<number> => {
+export const deleteProductById = async (
+    productId: number
+): Promise<{
+    id: number
+    title: string
+}> => {
     const [deletedProduct] = await db
         .delete(productsSchema)
         .where(eq(productsSchema.id, productId))
-        .returning({ deletedId: productsSchema.id })
+        .returning({ id: productsSchema.id, title: productsSchema.title })
 
-    return deletedProduct.deletedId
+    return { id: deletedProduct.id, title: deletedProduct.title }
 }

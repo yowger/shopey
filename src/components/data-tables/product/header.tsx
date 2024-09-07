@@ -1,7 +1,7 @@
 "use client"
 
 import { Table } from "@tanstack/react-table"
-import { Search } from "lucide-react"
+import { CirclePlus, Search } from "lucide-react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useRef } from "react"
 
@@ -89,20 +89,3 @@ export function DataTableToolbar<TData>({
         </div>
     )
 }
-/*
- <div className="relative w-full">
-                <input
-                    type="search"
-                    id="search-dropdown"
-                    className="block p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 rounded-e-lg rounded-s-gray-100 rounded-s-2 border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Search"
-                    required
-                />
-                <button
-                    type="submit"
-                    className="absolute top-0 end-0 p-2.5 h-full text-sm font-medium text-white bg-blue-700 rounded-e-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300"
-                >
-                    <Search />
-                </button>
-            </div>
-            */

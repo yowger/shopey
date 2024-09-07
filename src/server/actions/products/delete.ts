@@ -20,12 +20,12 @@ export const deleteProductAction = actionClient
         const { id } = parsedInput
 
         try {
-            const deletedProductId = await deleteProductById(id)
+            const deletedProduct = await deleteProductById(id)
 
             revalidateTag(PRODUCT_CACHE_KEY)
 
             return {
-                success: `Product ${deletedProductId} deleted successfully.`,
+                success: `Product ${deletedProduct.title} deleted successfully.`,
             }
         } catch (error: unknown) {
             if (error instanceof Error) {

@@ -19,12 +19,12 @@ export const createProductAction = actionClient
         const { parsedInput } = params
 
         try {
-            const createdProductId = await createProduct(parsedInput)
+            const createdProduct = await createProduct(parsedInput)
 
             revalidateTag(PRODUCT_CACHE_KEY)
 
             return {
-                success: `Product ${createdProductId} created successfully.`,
+                success: `Product ${createdProduct.title} created successfully.`,
             }
         } catch (error: unknown) {
             if (error instanceof Error) {

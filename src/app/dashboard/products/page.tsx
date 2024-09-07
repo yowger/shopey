@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { Suspense } from "react"
 
 import {
@@ -11,7 +12,7 @@ import { PAGE_SIZES } from "@/config/app"
 
 import { validatePageSize } from "@/utils/table/index"
 
-import { ProductDataTable } from "@/components/data-tables/product"
+import { Button } from "@/components/ui/button"
 import { columns } from "@/components/data-tables/product/columns"
 import {
     Card,
@@ -21,9 +22,11 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import DeleteAlert from "./delete-alert"
+import { ProductDataTable } from "@/components/data-tables/product"
 
 import type { OrderBy } from "@/server/types/table"
 import type { ColumnFiltersState, SortingState } from "@tanstack/react-table"
+import { Plus } from "lucide-react"
 
 interface ProductProps {
     searchParams: {
@@ -69,7 +72,17 @@ export default async function Product(props: ProductProps) {
         <>
             <Card>
                 <CardHeader>
-                    <CardTitle>Products</CardTitle>
+                    <CardTitle>
+                        <div className="flex justify-between items-center">
+                            Products
+                            <Button asChild variant="secondary" size="sm">
+                                <div className="ml-auto flex">
+                                    <Plus className="mr-2 h-4 w-4" />
+                                    <Link href="products/add">New Product</Link>
+                                </div>
+                            </Button>
+                        </div>
+                    </CardTitle>
                     <CardDescription>Manage your products.</CardDescription>
                 </CardHeader>
                 <CardContent>

@@ -20,12 +20,12 @@ export const updateProductAction = actionClient
         const { id, ...restProductInput } = parsedInput
 
         try {
-            const updatedProductId = await updateProduct(id, restProductInput)
+            const updatedProduct = await updateProduct(id, restProductInput)
 
             revalidateTag(PRODUCT_CACHE_KEY)
 
             return {
-                success: `Product ${updatedProductId} updated successfully.`,
+                success: `Product ${updatedProduct.title} updated successfully.`,
             }
         } catch (error: unknown) {
             if (error instanceof Error) {
