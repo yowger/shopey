@@ -20,6 +20,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
+import DeleteAlert from "./delete-alert"
 
 import type { OrderBy } from "@/server/types/table"
 import type { ColumnFiltersState, SortingState } from "@tanstack/react-table"
@@ -65,27 +66,30 @@ export default async function Product(props: ProductProps) {
     const suspenseKey = JSON.stringify({ ...searchParams })
 
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Products</CardTitle>
-                <CardDescription>Manage your products.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <Suspense key={suspenseKey} fallback={<p>Loading....</p>}>
-                    <ProductDataTable
-                        columns={columns}
-                        data={products}
-                        filter={filterState}
-                        rowCount={totalProducts}
-                        sort={sortState}
-                        pagination={{
-                            pageSize: PageLimit,
-                            pageIndex: page,
-                        }}
-                    />
-                </Suspense>
-            </CardContent>
-        </Card>
+        <>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Products</CardTitle>
+                    <CardDescription>Manage your products.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Suspense key={suspenseKey} fallback={<p>Loading....</p>}>
+                        <ProductDataTable
+                            columns={columns}
+                            data={products}
+                            filter={filterState}
+                            rowCount={totalProducts}
+                            sort={sortState}
+                            pagination={{
+                                pageSize: PageLimit,
+                                pageIndex: page,
+                            }}
+                        />
+                    </Suspense>
+                </CardContent>
+            </Card>
+            <DeleteAlert />
+        </>
     )
 }
 

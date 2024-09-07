@@ -2,6 +2,8 @@ import { Inter as FontSans } from "next/font/google"
 
 import { cn } from "@/lib/utils"
 
+import { ProductStoreProvider } from "@/components/providers/product-store-provider"
+
 import { ThemeProvider } from "@/components/providers/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
 
@@ -35,14 +37,16 @@ export default function RootLayout({ children }: RootLayoutProps) {
                     enableSystem
                     disableTransitionOnChange
                 >
-                    <div
-                        className={
-                            "flex-grow min-h-screen max-w-7xl mx-auto px-6 md:px-12"
-                        }
-                    >
-                        {children}
-                        <Toaster />
-                    </div>
+                    <ProductStoreProvider>
+                        <div
+                            className={
+                                "flex-grow min-h-screen max-w-7xl mx-auto px-6 md:px-12"
+                            }
+                        >
+                            {children}
+                            <Toaster />
+                        </div>
+                    </ProductStoreProvider>
                 </ThemeProvider>
             </body>
         </html>

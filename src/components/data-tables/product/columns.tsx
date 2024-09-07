@@ -5,6 +5,8 @@ import { format } from "date-fns"
 import Link from "next/link"
 import { MoreHorizontal } from "lucide-react"
 
+import { useProductStore } from "@/components/providers/product-store-provider"
+
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { DataTableColumnHeader } from "../columnHeader"
@@ -13,7 +15,7 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuLabel,
-    DropdownMenuSeparator,
+    // DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
@@ -91,8 +93,23 @@ export const columns: ColumnDef<Omit<Product, "description">>[] = [
     },
     {
         id: "actions",
-        cell: ({ row }) => {
+        cell: function CellComponent({ row }) {
             const product = row.original
+
+            const { openAlertDialog, setProduct } = useProductStore(
+                (state) => state
+            )
+
+            function handleOpenAlertDialog() {
+                const { id, title } = product
+
+                setProduct({
+                    id,
+                    title,
+                })
+
+                openAlertDialog()
+            }
 
             return (
                 <DropdownMenu modal={false}>
@@ -107,15 +124,21 @@ export const columns: ColumnDef<Omit<Product, "description">>[] = [
                         <DropdownMenuItem>
                             <Link
                                 href={`/dashboard/products/edit?id=${product.id}`}
+                                className="w-full"
                             >
-                                Edit Product
+                                Edit
                             </Link>
                         </DropdownMenuItem>
-                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                            onClick={() => handleOpenAlertDialog()}
+                        >
+                            Delete
+                        </DropdownMenuItem>
+                        {/* <DropdownMenuSeparator />
                         <DropdownMenuItem>View customer</DropdownMenuItem>
                         <DropdownMenuItem>
                             View payment details
-                        </DropdownMenuItem>
+                        </DropdownMenuItem> */}
                     </DropdownMenuContent>
                 </DropdownMenu>
             )
