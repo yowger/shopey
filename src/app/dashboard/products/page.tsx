@@ -5,7 +5,7 @@ import {
     isProductKey,
     ProductFilter,
     ProductSortColumns,
-} from "@/server/service/product"
+} from "@/server/service/product/pagination"
 
 import { PAGE_SIZES } from "@/config/app"
 
