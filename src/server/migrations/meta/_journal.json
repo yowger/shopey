@@ -50,6 +50,13 @@
       "when": 1725450748730,
       "tag": "0006_neat_arachne",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1725897890778,
+      "tag": "0007_needy_deathstrike",
+      "breakpoints": true
     }
   ]
 }
