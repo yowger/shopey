@@ -81,7 +81,7 @@ export const columns: ColumnDef<Omit<Product, "description">>[] = [
             <DataTableColumnHeader column={column} title="Updated" />
         ),
         cell: ({ row }) => {
-            const updated = row.original.created
+            const updated = row.original.updated
 
             const formattedDate = format(
                 new Date(updated),
