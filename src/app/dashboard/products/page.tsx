@@ -121,23 +121,25 @@ function crateFilterParams(
 ): ProductFilter[] | undefined {
     if (!filterState) return undefined
 
-    return filterState
+    const filterParams = filterState
         .map((filterItem) => {
             if (isProductKey(filterItem.id)) {
                 const column = filterItem.id
                 const value = filterItem.value as string
 
-                const filterStateParams = {
+                const filterStateParam = {
                     column,
                     value,
                 }
 
-                return filterStateParams
+                return filterStateParam
             }
 
             return null
         })
         .filter((filterItem) => filterItem !== null)
+
+    return filterParams
 }
 
 function createSortState(
