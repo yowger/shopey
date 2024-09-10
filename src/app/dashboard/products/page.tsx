@@ -54,7 +54,8 @@ export default async function Product(props: ProductProps) {
         : undefined
     const sortState = sort ? createSortState(sort, orderBy) : undefined
     const sortParams = sort ? createSortParams(sort, orderBy) : undefined
-    const PageLimit = validatePageSize(Number(limit), PAGE_SIZES)
+    const PageLimit =
+        validatePageSize(Number(limit), PAGE_SIZES) ?? PAGE_SIZES[0]
 
     const { products, total: totalProducts } =
         await getCachedProductsWithPagination({
