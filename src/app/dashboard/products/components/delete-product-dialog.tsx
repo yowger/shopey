@@ -2,8 +2,6 @@
 
 import { useAction } from "next-safe-action/hooks"
 
-import { useProductStore } from "@/components/providers/product-store-provider"
-
 import { deleteProductAction } from "@/server/actions/products/delete"
 
 import { Button } from "@/components/ui/button"
@@ -18,15 +16,19 @@ import {
 } from "@/components/ui/dialog"
 import { toast } from "@/components/ui/use-toast"
 
-export default function DeleteAlert() {
-    const { isAlertDialogOpen, product, closeAlertDialog } = useProductStore(
-        (state) => state
-    )
+import type { ProductDetails } from "@/app/dashboard/products/store/state-ui"
+
+interface DeleteDialogProps {
+    product: ProductDetails
+    isOpen: boolean
+    onClose: () => void
+}
+
+export default function DeleteProductDialog(props: DeleteDialogProps) {
+    const { product, isOpen, onClose } = props
 
     const { execute, isExecuting } = useAction(deleteProductAction, {
         onError: () => {
-            closeAlertDialog()
-
             toast({
                 variant: "destructive",
                 title: "Product delete failed.",
@@ -36,8 +38,6 @@ export default function DeleteAlert() {
         onSuccess: (params) => {
             const { data } = params
 
-            closeAlertDialog()
-
             const successMessage =
                 data?.success || "Product deleted successfully."
 
@@ -46,18 +46,17 @@ export default function DeleteAlert() {
                 description: successMessage,
             })
         },
+        onSettled: () => {
+            onClose()
+        },
     })
 
     function handleDeleteProduct() {
-        if (!product) {
-            return
-        }
-
         execute({ id: product.id })
     }
 
     return (
-        <Dialog open={isAlertDialogOpen} onOpenChange={closeAlertDialog}>
+        <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="sm:max-w-md">
                 <DialogHeader>
                     <DialogTitle>Are you sure?</DialogTitle>

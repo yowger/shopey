@@ -3,13 +3,19 @@
 import { createContext, useRef, useContext } from "react"
 import { useStore } from "zustand"
 
-import { createProductStore, initStore } from "@/app/dashboard/products/store"
+import {
+    createProductStore,
+    defaultInitState,
+} from "@/app/dashboard/products/store/state-ui"
 
+import type { ProductStore } from "@/app/dashboard/products/store/state-ui"
 import type { ReactNode } from "react"
-import type { StoreApi } from "zustand"
-import type { Store } from "@/app/dashboard/products/store"
 
-export const ProductStoreContext = createContext<StoreApi<Store> | null>(null)
+export type ProductStoreApi = ReturnType<typeof createProductStore>
+
+export const ProductStoreContext = createContext<ProductStoreApi | undefined>(
+    undefined
+)
 
 export interface ProductStoreProviderProps {
     children: ReactNode
@@ -18,9 +24,9 @@ export interface ProductStoreProviderProps {
 export const ProductStoreProvider = ({
     children,
 }: ProductStoreProviderProps) => {
-    const storeRef = useRef<StoreApi<Store>>()
+    const storeRef = useRef<ProductStoreApi>()
     if (!storeRef.current) {
-        storeRef.current = createProductStore(initStore())
+        storeRef.current = createProductStore(defaultInitState)
     }
 
     return (
@@ -30,7 +36,9 @@ export const ProductStoreProvider = ({
     )
 }
 
-export const useProductStore = <T,>(selector: (store: Store) => T): T => {
+export const useProductStore = <T,>(
+    selector: (store: ProductStore) => T
+): T => {
     const productStoreContext = useContext(ProductStoreContext)
 
     if (!productStoreContext) {

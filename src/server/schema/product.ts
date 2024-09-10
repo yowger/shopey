@@ -7,6 +7,7 @@ export const productsSchema = pgTable("products", {
     title: text("title").notNull(),
     created: timestamp("created").notNull().defaultNow(),
     updated: timestamp("updated")
+        .notNull()
         .defaultNow()
         .$onUpdate(() => new Date()),
     price: real("price").notNull(),

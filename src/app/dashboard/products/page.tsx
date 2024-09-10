@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { Plus } from "lucide-react"
 import { Suspense } from "react"
 
 import {
@@ -21,12 +22,11 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import DeleteAlert from "./delete-alert"
+import DeleteProductDialogContainer from "./components/delete-product-dialog-container"
 import { ProductDataTable } from "@/components/data-tables/product"
 
 import type { OrderBy } from "@/server/types/table"
 import type { ColumnFiltersState, SortingState } from "@tanstack/react-table"
-import { Plus } from "lucide-react"
 
 interface ProductProps {
     searchParams: {
@@ -99,7 +99,7 @@ export default async function Product(props: ProductProps) {
                     </Suspense>
                 </CardContent>
             </Card>
-            <DeleteAlert />
+            <DeleteProductDialogContainer />
         </>
     )
 }
