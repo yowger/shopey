@@ -48,14 +48,11 @@ export default async function Product(props: ProductProps) {
         orderBy = "desc",
     } = searchParams || {}
 
-    const filterState = filter ? parseFilterState(filter) : undefined
-    const filterParams = filterState
-        ? crateFilterParams(filterState)
-        : undefined
-    const sortState = sort ? createSortState(sort, orderBy) : undefined
-    const sortParams = sort ? createSortParams(sort, orderBy) : undefined
-    const PageLimit =
-        validatePageSize(Number(limit), PAGE_SIZES) ?? PAGE_SIZES[0]
+    const filterState = parseFilterState(filter)
+    const filterParams = crateFilterParams(filterState)
+    const sortState = createSortState(sort, orderBy)
+    const sortParams = createSortParams(sort, orderBy)
+    const PageLimit = validatePageSize(Number(limit), PAGE_SIZES)
 
     const { products, total: totalProducts } =
         await getCachedProductsWithPagination({
@@ -107,25 +104,35 @@ export default async function Product(props: ProductProps) {
     )
 }
 
-function parseFilterState(filter: string): ColumnFiltersState {
-    return filter.split(",").map((filterStr) => {
+function parseFilterState(filter?: string): ColumnFiltersState | undefined {
+    if (!filter) return undefined
+
+    const parsedFilterState = filter.split(",").map((filterStr) => {
         const [id, value] = filterStr.split(":")
 
         return { id, value }
     })
+
+    return parsedFilterState
 }
 
-function crateFilterParams(filterState: ColumnFiltersState): ProductFilter[] {
+function crateFilterParams(
+    filterState?: ColumnFiltersState
+): ProductFilter[] | undefined {
+    if (!filterState) return undefined
+
     return filterState
         .map((filterItem) => {
             if (isProductKey(filterItem.id)) {
                 const column = filterItem.id
                 const value = filterItem.value as string
 
-                return {
+                const filterStateParams = {
                     column,
                     value,
                 }
+
+                return filterStateParams
             }
 
             return null
@@ -133,23 +140,32 @@ function crateFilterParams(filterState: ColumnFiltersState): ProductFilter[] {
         .filter((filterItem) => filterItem !== null)
 }
 
-function createSortState(sort: string, orderBy: OrderBy): SortingState {
-    return [
+function createSortState(
+    sort?: string,
+    orderBy?: OrderBy
+): SortingState | undefined {
+    if (!sort || !orderBy) return undefined
+
+    const sortState = [
         {
             id: sort,
             desc: orderBy === "desc",
         },
     ]
+
+    return sortState
 }
 
 function createSortParams(
-    sort: string,
-    orderBy: OrderBy
+    sort?: string,
+    orderBy?: OrderBy
 ): ProductSortColumns | undefined {
-    if (!isProductKey(sort)) return undefined
+    if (!sort || !orderBy || !isProductKey(sort)) return undefined
 
-    return {
+    const sortParams = {
         column: sort,
         order: orderBy,
     }
+
+    return sortParams
 }
