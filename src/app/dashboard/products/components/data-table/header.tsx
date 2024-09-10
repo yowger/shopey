@@ -10,7 +10,7 @@ import { useEventListener } from "@/hooks/utils/useEventListener"
 import { createHref } from "@/utils/url"
 
 import { Button } from "@/components/ui/button"
-import { DataTableViewOptions } from "../viewOptions"
+import { DataTableViewOptions } from "../../../../../components/data-tables/viewOptions"
 import { Input } from "@/components/ui/input"
 
 interface DataTableToolbarProps<TData> {

@@ -14,7 +14,7 @@ import { PAGE_SIZES } from "@/config/app"
 import { validatePageSize } from "@/utils/table/index"
 
 import { Button } from "@/components/ui/button"
-import { columns } from "@/components/data-tables/product/columns"
+import { columns } from "@/app/dashboard/products/components/data-table/columns"
 import {
     Card,
     CardContent,
@@ -23,7 +23,7 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import DeleteProductDialogContainer from "./components/delete-product-dialog-container"
-import { ProductDataTable } from "@/components/data-tables/product"
+import { ProductDataTable } from "@/app/dashboard/products/components/data-table"
 
 import type { OrderBy } from "@/server/types/table"
 import type { ColumnFiltersState, SortingState } from "@tanstack/react-table"

@@ -11,7 +11,7 @@ import {
 
 import { createHref } from "@/utils/url"
 
-import { DataTablePagination } from "../pagination"
+import { DataTablePagination } from "../../../../../components/data-tables/pagination"
 import { DataTableToolbar } from "./header"
 import {
     Table,

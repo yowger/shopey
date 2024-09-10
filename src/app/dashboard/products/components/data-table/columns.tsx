@@ -9,7 +9,7 @@ import { useProductStore } from "@/components/providers/product-store-provider"
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import { DataTableColumnHeader } from "../columnHeader"
+import { DataTableColumnHeader } from "../../../../../components/data-tables/columnHeader"
 import {
     DropdownMenu,
     DropdownMenuContent,
