@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dialog"
 import { toast } from "@/components/ui/use-toast"
 
-import type { ProductDetails } from "@/app/dashboard/products/store/state-ui"
+import type { ProductDetails } from "../../../_types"
 
 interface DeleteDialogProps {
     product: ProductDetails

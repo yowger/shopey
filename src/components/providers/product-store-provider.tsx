@@ -3,11 +3,11 @@
 import { createContext, useRef, useContext } from "react"
 import { useStore } from "zustand"
 
-import { createProductStore, initStore } from "@/app/dashboard/products/store"
+import { createProductStore, initStore } from "@/app/dashboard/products/_stores"
 
 import type { ReactNode } from "react"
 import type { StoreApi } from "zustand"
-import type { Store } from "@/app/dashboard/products/store"
+import type { Store } from "@/app/dashboard/products/_stores"
 
 export const ProductStoreContext = createContext<StoreApi<Store> | null>(null)
 

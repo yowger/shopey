@@ -13,8 +13,11 @@ import { PAGE_SIZES } from "@/config/app"
 
 import { validatePageSize } from "@/utils/table/index"
 
+import AddProductContainer from "./_components/dialogs/add-product/container"
+import DeleteProductContainer from "./_components/dialogs/delete-product/container"
+import { ProductDataTable } from "@/app/dashboard/products/_components/data-table"
 import { Button } from "@/components/ui/button"
-import { columns } from "@/app/dashboard/products/components/data-table/columns"
+import { columns } from "@/app/dashboard/products/_components/data-table/columns"
 import {
     Card,
     CardContent,
@@ -22,8 +25,6 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import DeleteProductDialogContainer from "./components/delete-product-dialog-container"
-import { ProductDataTable } from "@/app/dashboard/products/components/data-table"
 
 import type { OrderBy } from "@/server/types/table"
 import type { ColumnFiltersState, SortingState } from "@tanstack/react-table"
@@ -74,10 +75,15 @@ export default async function Product(props: ProductProps) {
                         <div className="flex justify-between items-center">
                             Products
                             <Button asChild variant="secondary" size="sm">
-                                <div className="ml-auto flex">
-                                    <Plus className="mr-2 h-4 w-4" />
-                                    <Link href="products/add">New Product</Link>
-                                </div>
+                                <Link
+                                    href="/dashboard/products/add"
+                                    prefetch={false}
+                                >
+                                    <div className="ml-auto flex items-center">
+                                        <Plus className="mr-2 h-4 w-4" />
+                                        New Product
+                                    </div>
+                                </Link>
                             </Button>
                         </div>
                     </CardTitle>
@@ -99,7 +105,8 @@ export default async function Product(props: ProductProps) {
                     </Suspense>
                 </CardContent>
             </Card>
-            <DeleteProductDialogContainer />
+            <AddProductContainer />
+            <DeleteProductContainer />
         </>
     )
 }

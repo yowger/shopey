@@ -96,19 +96,10 @@ export const columns: ColumnDef<Omit<Product, "description">>[] = [
         cell: function CellComponent({ row }) {
             const product = row.original
 
-            const { openDeleteDialog, setProduct } = useProductStore(
-                (state) => state
-            )
+            const { setDeleteProductOpen } = useProductStore((state) => state)
 
             function handleOpenDeleteDialog() {
-                const { id, title } = product
-
-                setProduct({
-                    id,
-                    title,
-                })
-
-                openDeleteDialog()
+                setDeleteProductOpen(true, product)
             }
 
             return (
@@ -134,7 +125,7 @@ export const columns: ColumnDef<Omit<Product, "description">>[] = [
                             </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                            onClick={() => handleOpenDeleteDialog()}
+                            onClick={handleOpenDeleteDialog}
                             className="cursor-pointer"
                         >
                             Delete

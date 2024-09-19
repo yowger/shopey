@@ -1,17 +1,14 @@
 import { createStore } from "zustand/vanilla"
 
-import createDeleteDialogSlice from "./slices/delete-dialog-state"
+import { createProductDialogSlice } from "./slices/product-dialog-ui"
 import { defaultProductState } from "./defaultState"
 
 import type { ProductState } from "./defaultState"
-import type {
-    DeleteDialogSlice,
-    DeleteDialogState,
-} from "./slices/delete-dialog-state"
+import type { ProductDialogSlice } from "./slices/product-dialog-ui"
 
-export type Store = DeleteDialogSlice
+export type Store = ProductDialogSlice
 
-export const initStore = (): DeleteDialogState => {
+export const initStore = (): ProductState => {
     return defaultProductState
 }
 
@@ -20,6 +17,6 @@ export const createProductStore = (
 ) => {
     return createStore<Store>()((set, get, store) => ({
         ...initState,
-        ...createDeleteDialogSlice(set, get, store),
+        ...createProductDialogSlice(set, get, store),
     }))
 }

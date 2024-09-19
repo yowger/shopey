@@ -1,6 +1,14 @@
-import ProductForm from "@/components/forms/product"
+import ProductForm from "@/app/dashboard/products/_components/forms/product"
 
 import { getCachedProductById } from "@/server/service/product"
+
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card"
 
 interface EditProductProps {
     searchParams: {
@@ -18,5 +26,15 @@ export default async function EditProduct(props: EditProductProps) {
         return <p>Product not found</p>
     }
 
-    return <ProductForm product={product} />
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Edit product</CardTitle>
+                <CardDescription>Modify existing product</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ProductForm product={product} />
+            </CardContent>
+        </Card>
+    )
 }
