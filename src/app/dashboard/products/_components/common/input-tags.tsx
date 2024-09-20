@@ -18,6 +18,7 @@ const InputTags = forwardRef<HTMLInputElement, InputTagsProps>((props) => {
 
     const [tags, setTags] = useState<string[]>(initialTags)
     const [inputValue, setInputValue] = useState("")
+    const hasReachedMaxTags = maxTags && tags.length >= maxTags
 
     function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
         setInputValue(event.target.value)
@@ -86,6 +87,11 @@ const InputTags = forwardRef<HTMLInputElement, InputTagsProps>((props) => {
                 onKeyDown={handleKeyDown}
                 placeholder={tags.length === 0 ? placeholder : ""}
             />
+            {hasReachedMaxTags && (
+                <p className="text-sm text-muted-foreground">
+                    You have reached the maximum of {maxTags} tags
+                </p>
+            )}
         </div>
     )
 })
