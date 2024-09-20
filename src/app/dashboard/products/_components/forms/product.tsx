@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { PhilippinePeso } from "lucide-react"
 import { zodResolver } from "@hookform/resolvers/zod"
 
-import { CreateProductSchema, UpdateProductSchema } from "@/schemas/product"
+import { CreateProductSchema, UpdateProductSchema } from "@/app/dashboard/products/_schemas/product"
 
 import { createProductAction } from "@/server/actions/products/create"
 import { updateProductAction } from "@/server/actions/products/update"
@@ -32,7 +32,7 @@ import RichTextEditor from "@/components/tiptap"
 import { useToast } from "@/components/ui/use-toast"
 
 import type { Product } from "@/server/types/product"
-import type { CreateProductInput, UpdateProductInput } from "@/schemas/product"
+import type { CreateProductInput, UpdateProductInput } from "@/app/dashboard/products/_schemas/product"
 
 interface ProductFormProps {
     product?: Product | null

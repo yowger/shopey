@@ -13,7 +13,7 @@ import { PAGE_SIZES } from "@/config/app"
 
 import { validatePageSize } from "@/utils/table/index"
 
-import AddProductContainer from "./_components/dialogs/add-product/container"
+import AddProductVariantContainer from "./_components/dialogs/add-product-variant/container"
 import DeleteProductContainer from "./_components/dialogs/delete-product/container"
 import { ProductDataTable } from "@/app/dashboard/products/_components/data-table"
 import { Button } from "@/components/ui/button"
@@ -105,7 +105,7 @@ export default async function Product(props: ProductProps) {
                     </Suspense>
                 </CardContent>
             </Card>
-            <AddProductContainer />
+            <AddProductVariantContainer />
             <DeleteProductContainer />
         </>
     )

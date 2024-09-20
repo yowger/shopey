@@ -5,7 +5,7 @@ import { revalidateTag } from "next/cache"
 
 import { actionClient } from "@/lib/safe-action/public"
 
-import { CreateProductSchema } from "@/schemas/product"
+import { CreateProductSchema } from "@/app/dashboard/products/_schemas/product"
 
 import { createProduct } from "@/server/service/product"
 

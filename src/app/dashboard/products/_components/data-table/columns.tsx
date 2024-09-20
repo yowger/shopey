@@ -8,7 +8,6 @@ import { MoreHorizontal } from "lucide-react"
 import { useProductStore } from "@/components/providers/product-store-provider"
 
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
 import { DataTableColumnHeader } from "../../../../../components/data-tables/columnHeader"
 import {
     DropdownMenu,
@@ -23,30 +22,6 @@ import type { Product } from "@/server/types/product"
 
 // todo make global partial product
 export const columns: ColumnDef<Omit<Product, "description">>[] = [
-    {
-        id: "select",
-        header: ({ table }) => (
-            <Checkbox
-                checked={
-                    table.getIsAllPageRowsSelected() ||
-                    (table.getIsSomePageRowsSelected() && "indeterminate")
-                }
-                onCheckedChange={(value) =>
-                    table.toggleAllPageRowsSelected(!!value)
-                }
-                aria-label="Select all"
-            />
-        ),
-        cell: ({ row }) => (
-            <Checkbox
-                checked={row.getIsSelected()}
-                onCheckedChange={(value) => row.toggleSelected(!!value)}
-                aria-label="Select row"
-            />
-        ),
-        enableSorting: false,
-        enableHiding: false,
-    },
     {
         accessorKey: "id",
         header: ({ column }) => (
@@ -96,10 +71,16 @@ export const columns: ColumnDef<Omit<Product, "description">>[] = [
         cell: function CellComponent({ row }) {
             const product = row.original
 
-            const { setDeleteProductOpen } = useProductStore((state) => state)
+            const { setDeleteProductOpen, setAddVariantOpen } = useProductStore(
+                (state) => state
+            )
 
             function handleOpenDeleteDialog() {
                 setDeleteProductOpen(true, product)
+            }
+
+            function handleOpenVariantDialog() {
+                setAddVariantOpen(true, product)
             }
 
             return (
@@ -112,6 +93,12 @@ export const columns: ColumnDef<Omit<Product, "description">>[] = [
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuItem
+                            onClick={handleOpenVariantDialog}
+                            className="cursor-pointer"
+                        >
+                            New Variant
+                        </DropdownMenuItem>
                         <DropdownMenuItem className="p-0">
                             <Link
                                 prefetch={false}

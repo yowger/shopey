@@ -1,15 +1,12 @@
 import { StateCreator } from "zustand"
 
-export type Variant = {
-    id: string
-    name: string
-    price: number
-    productId: string
-}
+import type { Product } from "@/server/types/product"
 
-export type VariantDetails = Variant
+export type VariantDetails = Product
+export type ProductDetails = Omit<Product, "description">
 
 export interface VariantDialogState {
+    currentSelectedProductForVariant: ProductDetails | null
     currentSelectedVariant: VariantDetails | null
     isAddVariantOpen: boolean
     isEditVariantOpen: boolean
@@ -17,9 +14,17 @@ export interface VariantDialogState {
 }
 
 export interface VariantDialogAction {
-    setAddVariantOpen: (open: boolean) => void
-    setEditVariantOpen: (open: boolean, variant: VariantDetails) => void
-    setDeleteVariantOpen: (open: boolean, variant: VariantDetails) => void
+    setAddVariantOpen: (open: boolean, product: ProductDetails) => void
+    setEditVariantOpen: (
+        open: boolean,
+        product: ProductDetails,
+        variant: VariantDetails
+    ) => void
+    setDeleteVariantOpen: (
+        open: boolean,
+        product: ProductDetails,
+        variant: VariantDetails
+    ) => void
     clearSelectedVariant: () => void
     resetVariantState: () => void
 }
@@ -27,6 +32,7 @@ export interface VariantDialogAction {
 export type VariantDialogSlice = VariantDialogState & VariantDialogAction
 
 export const initialVariantState: VariantDialogState = {
+    currentSelectedProductForVariant: null,
     currentSelectedVariant: null,
     isAddVariantOpen: false,
     isEditVariantOpen: false,
@@ -37,15 +43,22 @@ export const createVariantDialogSlice: StateCreator<VariantDialogSlice> = (
     set
 ) => ({
     ...initialVariantState,
-    setAddVariantOpen: (open) => set({ isAddVariantOpen: open }),
-    setEditVariantOpen: (open, variant) =>
+    setAddVariantOpen: (open, product) =>
+        set({
+            isAddVariantOpen: open,
+            currentSelectedProductForVariant: product,
+            currentSelectedVariant: null,
+        }),
+    setEditVariantOpen: (open, product, variant) =>
         set({
             isEditVariantOpen: open,
+            currentSelectedProductForVariant: product,
             currentSelectedVariant: variant,
         }),
-    setDeleteVariantOpen: (open, variant) =>
+    setDeleteVariantOpen: (open, product, variant) =>
         set({
             isDeleteVariantOpen: open,
+            currentSelectedProductForVariant: product,
             currentSelectedVariant: variant,
         }),
     clearSelectedVariant: () => set({ currentSelectedVariant: null }),

@@ -5,7 +5,7 @@ import { revalidatePath, revalidateTag } from "next/cache"
 
 import { actionClient } from "@/lib/safe-action/public"
 
-import { DeleteProductSchema } from "@/schemas/product"
+import { DeleteProductSchema } from "@/app/dashboard/products/_schemas/product"
 
 import { deleteProductById } from "@/server/service/product"
 
