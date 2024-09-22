@@ -5,14 +5,10 @@ export const authActionClient = actionClient.use(async (args) => {
     const { next } = args
 
     const session = await auth()
-    if (!session) {
-        throw new Error("Session not found.")
+
+    if (!session || !session.user.sub) {
+        throw new Error("Session not found or valid.")
     }
 
-    const { user } = session
-    if (!user.sub) {
-        throw new Error("Session is not valid.")
-    }
-
-    return next({ ctx: { userId: user.sub } })
+    return next({ ctx: { userId: session.user.sub } })
 })

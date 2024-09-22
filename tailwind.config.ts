@@ -1,8 +1,9 @@
 import { fontFamily } from "tailwindcss/defaultTheme"
+import { withUt } from "uploadthing/tw"
 
 import type { Config } from "tailwindcss"
 
-const config = {
+const config = withUt({
     darkMode: ["class"],
     content: [
         "./pages/**/*.{ts,tsx}",
@@ -88,6 +89,6 @@ const config = {
         require("tailwindcss-animate"),
         require("@tailwindcss/typography"),
     ],
-} satisfies Config
+}) satisfies Config
 
 export default config

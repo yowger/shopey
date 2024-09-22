@@ -13,7 +13,7 @@ interface InputTagsProps {
     maxTags?: number
 }
 
-const InputTags = forwardRef<HTMLInputElement, InputTagsProps>((props) => {
+const InputTags = forwardRef<HTMLInputElement, InputTagsProps>((props, ref) => {
     const { tags: initialTags = [], maxTags, placeholder, onChange } = props
 
     const [tags, setTags] = useState<string[]>(initialTags)

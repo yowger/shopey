@@ -32,13 +32,17 @@ export default function AddProductContainer() {
             <SheetContent
                 style={{
                     maxWidth: "56rem",
+                    overflowY: "auto",
+                    overflowX: "hidden",
                 }}
             >
                 <SheetHeader>
                     <SheetTitle>{title}</SheetTitle>
                 </SheetHeader>
                 <div className="py-4">
-                    <ProductVariantForm />
+                    <ProductVariantForm
+                        product={currentSelectedProductForVariant}
+                    />
                 </div>
             </SheetContent>
         </Sheet>
